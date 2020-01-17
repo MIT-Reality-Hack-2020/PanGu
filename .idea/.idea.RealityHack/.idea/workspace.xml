@@ -30,8 +30,8 @@
       <list>
         <option value="$PROJECT_DIR$/Assets/PlantManager.cs" />
         <option value="$PROJECT_DIR$/Assets/InstancedParticleMesh.shader" />
-        <option value="$PROJECT_DIR$/Assets/ParticleSim.compute" />
         <option value="$PROJECT_DIR$/Assets/ParticleSimManager.cs" />
+        <option value="$PROJECT_DIR$/Assets/ParticleSim.compute" />
       </list>
     </option>
   </component>

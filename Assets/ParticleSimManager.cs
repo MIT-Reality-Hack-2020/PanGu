@@ -60,7 +60,7 @@ public class ParticleSimManager : MonoBehaviour {
         for (int i = 0; i < particleCount; i++) {
             initialParticles[i] = new GPUParticle();
             initialParticles[i].position = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
-            initialParticles[i].velocity = rand.NextFloat3(new float3(-.1f, -.1f, -.1f), new float3(.1f, .1f, .1f));
+            initialParticles[i].velocity = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
             initialParticles[i].density = particleRestingDensity;
             initialParticles[i].pressure = 1f;
             //Debug.Log($"{initialParticles[i].position} {initialParticles[i].velocity}");
@@ -102,9 +102,9 @@ public class ParticleSimManager : MonoBehaviour {
         particleSimShader.SetFloat("timeStep", timeStep);
         particleSimShader.SetVector("gravity", gravity);
         
-        //particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
-        //particleSimShader.Dispatch(forceIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
-        particleSimShader.Dispatch(verletIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(forceIndex,           Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(verletIndex,          Mathf.CeilToInt(particleCount / 128f), 1, 1);
     }
 
     private void OnDestroy() {

@@ -248,10 +248,10 @@ MonoBehaviour:
   particleCount: 10000
   particleMass: 0.2
   particleRadius: 0.05
-  particleStiffness: 20
+  particleStiffness: 1
   particleRestingDensity: 100
-  particleViscosity: 100
-  smoothingLength: 0.11
+  particleViscosity: 1
+  smoothingLength: 0.2
   timeStep: 0.016666668
   gravity:
     x: 0
