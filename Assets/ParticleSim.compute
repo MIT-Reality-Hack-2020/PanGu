@@ -1,11 +1,6 @@
-﻿// Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel Verlet
+﻿#pragma kernel Verlet
 #pragma kernel DensityPressure
 #pragma kernel Force
-
-// Create a RenderTexture with enableRandomWrite flag and set it
-// with cs.SetTexture
-//RWTexture2D<float4> Result;
 
 struct GPUParticle {
      float3 position;
@@ -20,16 +15,16 @@ struct GPUParticle {
   StructuredBuffer<GPUParticle> lastParticles;
 RWStructuredBuffer<GPUParticle> nextParticles;
 
-uint particleCount;
+int particleCount;
 
 float pi = 3.14159274;
 
 // particle physical properties (move to per-particle buffer?)
-float particleMass = 0.02;
-float particleRadius  = 0.005;
-float particleStiffness = 2000.0;
+float particleMass           = 0.02;
+float particleRadius         = 0.005;
+float particleStiffness      = 2000.0;
 float particleRestingDensity = 1000.0;
-float particleViscosity = 1000.0;
+float particleViscosity      = 1000.0;
 
 float smoothingLength = 0.020;
 float timeStep = 1.0 / 60.0;
@@ -38,27 +33,36 @@ float3 gravity = float3(0, -9.82, 0);
 [numthreads(128,1,1)]
 void Verlet (uint id : SV_DispatchThreadID)
 {
+    //if (id > particleCount)
+    //    return;
+
     GPUParticle lastParticle = lastParticles[id];
-    float3 acceleration = lastParticle.force / lastParticle.density;
-    float3 velocity = lastParticle.velocity + timeStep * acceleration;
-    float3 position = lastParticle.position + timeStep * velocity;
+    //float3 acceleration = lastParticle.force / lastParticle.density;
+    //float3 acceleration 
+    float3 velocity = lastParticle.velocity;// + timeStep * acceleration;
+    float3 position = lastParticle.position + 0.1 * velocity;
 
     // TODO: apply sphere constraint
     
-    lastParticle.velocity = velocity;
-    lastParticle.position = position;
+    //lastParticle.velocity = velocity;
+    //lastParticle.position = position;
     
-    nextParticles[id] = lastParticle;
+    //nextParticles[id] = lastParticle;
+    nextParticles[id].position = position;
+    //nextParticles[id].position += float3(0.0, 0.1, 0.0);
 }
 
 [numthreads(128,1,1)]
 void DensityPressure(uint id : SV_DispatchThreadID) 
 {
+    if (id > particleCount)
+        return;
+
     GPUParticle lastParticle = lastParticles[id];
     float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
-    for (int i = 0; i < particleCount; i++) {
+    for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
         float3 delta = lastParticle.position - nextParticles[i].position;
         float distance = length(delta);
@@ -76,12 +80,15 @@ void DensityPressure(uint id : SV_DispatchThreadID)
 [numthreads(128,1,1)]
 void Force(uint id : SV_DispatchThreadID)
 {
+    if (id > particleCount)
+        return;
+
     GPUParticle lastParticle = lastParticles[id];
     float3 pressureForce;
     float3 viscosityForce;
 
     // TODO: optimize!!! needs spatial partitioning
-    for (int i = 0; i < particleCount; i++) {
+    for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
         float3 delta = lastParticle.position - nextParticles[i].position;
     }

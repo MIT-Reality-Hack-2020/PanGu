@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="de6515c0-58f0-48f9-8e85-f2d89c4f1741" name="Default Changelist" comment="" />
+    <list default="true" id="de6515c0-58f0-48f9-8e85-f2d89c4f1741" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/indexLayout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Instanced_InstancedSurfaceShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Instanced_InstancedSurfaceShader.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ParticleSim.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ParticleSim.compute" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/ParticleSimManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ParticleSimManager.cs" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.physics@0.2.4-preview/Unity.Physics/Dynamics/Joint/Physics_Joint.cs" root0="SKIP_HIGHLIGHTING" />
@@ -20,13 +29,14 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Assets/PlantManager.cs" />
-        <option value="$PROJECT_DIR$/Assets/ParticleSim.compute" />
         <option value="$PROJECT_DIR$/Assets/InstancedParticleMesh.shader" />
         <option value="$PROJECT_DIR$/Assets/ParticleSimManager.cs" />
+        <option value="$PROJECT_DIR$/Assets/ParticleSim.compute" />
       </list>
     </option>
   </component>
   <component name="ProjectId" id="1WWpFAALpyyMyWsjv1RBI1Jihza" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="Discover.Launch.Via.Unity" value="true" />
     <property name="Rider.DefaultBreakpoints.AreToggled" value="true" />
@@ -68,6 +78,17 @@
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="EditMode" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="true" />
   </component>
