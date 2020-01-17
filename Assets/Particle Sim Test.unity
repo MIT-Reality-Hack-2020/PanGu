@@ -243,18 +243,19 @@ MonoBehaviour:
   particleSimShader: {fileID: 7200000, guid: d4c6481ee1b6eb24a8bdedea2a423ae4, type: 3}
   particleDebugMaterial: {fileID: 2100000, guid: f2e91d82ca455f04ca7705b7820d6bc1,
     type: 2}
-  particleMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  particleCount: 1000
-  particleMass: 0.02
-  particleRadius: 0.005
+  particleMesh: {fileID: 289301614986012343, guid: 500a78808be29694383c1827c70a6ae8,
+    type: 3}
+  particleCount: 500
+  particleMass: 0.002
+  particleRadius: 0.05
   particleStiffness: 2000
   particleRestingDensity: 1000
   particleViscosity: 1000
-  smoothingLength: 0.02
+  smoothingLength: 0.1
   timeStep: 0.016666668
   gravity:
     x: 0
-    y: -9.82
+    y: -0.25
     z: 0
     w: 0
 --- !u!4 &1199329838
@@ -265,7 +266,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1199329836}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.31085747, y: 0.6653644, z: -0.19499777}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
