@@ -56,12 +56,12 @@ public class ParticleSimManager : MonoBehaviour {
         args[3] = particleMesh.GetBaseVertex(0);
                                                                       
         var initialParticles = new GPUParticle[particleCount];
-        var rand = new Random(283927);
+        var rand = new Random((uint)gameObject.GetInstanceID());
         for (int i = 0; i < particleCount; i++) {
             initialParticles[i] = new GPUParticle();
             initialParticles[i].position = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
-            initialParticles[i].velocity = rand.NextFloat3(new float3(-.01f, -.01f, -.01f), new float3(.01f, .01f, .01f));
-            initialParticles[i].density = 1f;
+            initialParticles[i].velocity = rand.NextFloat3(new float3(-.1f, -.1f, -.1f), new float3(.1f, .1f, .1f));
+            initialParticles[i].density = particleRestingDensity;
             initialParticles[i].pressure = 1f;
             //Debug.Log($"{initialParticles[i].position} {initialParticles[i].velocity}");
         }
@@ -87,10 +87,10 @@ public class ParticleSimManager : MonoBehaviour {
         //Debug.Log($"{particleCount}");
         particleSimShader.SetInt("particleCount", (int)particleCount);
         
-        PingPongBuffers();
-        //particleSimShader.SetBuffer(verletIndex, "particles", particleBufferA);
-        //particleSimShader.SetBuffer(densityPressureIndex, "particles", particleBufferA);
-        //particleSimShader.SetBuffer(forceIndex, "particles", particleBufferA);
+        //PingPongBuffers();
+        particleSimShader.SetBuffer(verletIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(densityPressureIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(forceIndex, "particles", particleBufferA);
         
         particleSimShader.SetFloat("pi", Mathf.PI);
         particleSimShader.SetFloat("particleMass", particleMass);
@@ -102,8 +102,8 @@ public class ParticleSimManager : MonoBehaviour {
         particleSimShader.SetFloat("timeStep", timeStep);
         particleSimShader.SetVector("gravity", gravity);
         
-        particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
-        particleSimShader.Dispatch(forceIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        //particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        //particleSimShader.Dispatch(forceIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
         particleSimShader.Dispatch(verletIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
     }
 
@@ -117,8 +117,8 @@ public class ParticleSimManager : MonoBehaviour {
         drawArgs.SetData(args);
         
         particleDebugMaterial.SetPass(0);
-        particleDebugMaterial.SetBuffer("_ParticleBuffer", pingPong ? particleBufferA : particleBufferB);
-        //particleDebugMaterial.SetBuffer("_ParticleBuffer", particleBufferA);
+        //particleDebugMaterial.SetBuffer("_ParticleBuffer", pingPong ? particleBufferA : particleBufferB);
+        particleDebugMaterial.SetBuffer("_ParticleBuffer", particleBufferA);
         
         Graphics.DrawMeshInstancedIndirect(particleMesh, 0, particleDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), drawArgs);
     }

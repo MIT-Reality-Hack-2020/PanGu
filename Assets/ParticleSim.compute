@@ -12,9 +12,9 @@ struct GPUParticle {
      uint   type; // 0 = earth, 1 = water, 2 = fire, 3 = wood, 4 = metal
 };
 
-  StructuredBuffer<GPUParticle> lastParticles;
-RWStructuredBuffer<GPUParticle> nextParticles;
-//RWStructuredBuffer<GPUParticle> particles;
+  //StructuredBuffer<GPUParticle> lastParticles;
+//RWStructuredBuffer<GPUParticle> nextParticles;
+RWStructuredBuffer<GPUParticle> particles;
 
 int particleCount;
 
@@ -23,7 +23,7 @@ float pi = 3.14159274;
 // particle physical properties (move to per-particle buffer?)
 float particleMass           = 0.02;
 float particleRadius         = 0.005;
-float particleStiffness      = 2000.0;
+float particleStiffness      = 2000.0; 
 float particleRestingDensity = 1000.0;
 float particleViscosity      = 1000.0;
 
@@ -37,17 +37,17 @@ void Verlet (uint id : SV_DispatchThreadID)
     if (id > particleCount)
         return;
 
-    GPUParticle lastParticle = lastParticles[id];
+    GPUParticle lastParticle = particles[id];
     float3 acceleration = lastParticle.force / lastParticle.density;
-    float3 velocity = lastParticle.velocity + timeStep * acceleration;
+    float3 velocity = lastParticle.velocity + timeStep * acceleration + timeStep * gravity;
     float3 position = lastParticle.position + timeStep * velocity;
 
     // TODO: apply sphere constraint
-    //if (length(position) > 3.0)
-    //    position = normalize(position) * 3.0;
+    if (length(position) > 3.0)
+        position = normalize(position) * 3.0;
     
-    nextParticles[id].velocity = velocity;
-    nextParticles[id].position = position;
+    particles[id].velocity = velocity;
+    particles[id].position = position;
 }
 
 [numthreads(128,1,1)]
@@ -56,22 +56,22 @@ void DensityPressure(uint id : SV_DispatchThreadID)
     if (id > particleCount)
         return;
 
-    GPUParticle lastParticle = lastParticles[id];
+    GPUParticle lastParticle = particles[id];
     float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
     for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
-        float3 delta = lastParticle.position - lastParticles[i].position;
+        float3 delta = lastParticle.position - particles[i].position;
         float distance = length(delta);
         if (distance < smoothingLength) {
             densitySum += particleMass * 315.0 * pow(smoothingLength * smoothingLength - distance * distance, 3.0) / (64.0 * pi * pow(smoothingLength, 9.0));
         }
     }
     
-    nextParticles[id].density = densitySum;
-    nextParticles[id].pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
-    //nextParticles[id] = lastParticle;
+    particles[id].density = densitySum;
+    particles[id].pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
+    //particles[id] = lastParticle;
 }
 
 // TODO: could this be rolled into DensityPressure kernel? avoid calculating delta twice etc
@@ -81,26 +81,26 @@ void Force(uint id : SV_DispatchThreadID)
     if (id > particleCount)
         return;
 
-    GPUParticle lastParticle = lastParticles[id];
+    GPUParticle lastParticle = particles[id];
     float3 pressureForce = float3(0,0,0);
     float3 viscosityForce = float3(0,0,0);
 
     // TODO: optimize!!! needs spatial partitioning
     for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
-        float3 delta = lastParticle.position - lastParticles[i].position;
+        float3 delta = lastParticle.position - particles[i].position;
         float distance = length(delta);
         if (distance < smoothingLength) {
-            pressureForce -= particleMass * (lastParticle.pressure + lastParticles[i].pressure) / (2.0 * lastParticles[i].density) *
+            pressureForce -= particleMass * (lastParticle.pressure + particles[i].pressure) / (2.0 * particles[i].density) *
                 -45.0 / (pi * pow(smoothingLength, 6.0)) * pow(smoothingLength - distance, 2.0) * normalize(delta);
                 
-            viscosityForce += particleMass * (lastParticles[i].velocity - lastParticle.velocity) / lastParticles[i].density *
+            viscosityForce += particleMass * (particles[i].velocity - lastParticle.velocity) / particles[i].density *
                 45.0 / (pi * pow(smoothingLength, 6.0)) * (smoothingLength - distance);
         }
     }
     
     viscosityForce *= particleViscosity;
-    float3 externalForce = gravity;
+    float3 externalForce = 0;//gravity;
     
-    nextParticles[id].force = pressureForce + viscosityForce + externalForce;
+    //particles[id].force = pressureForce + viscosityForce + externalForce;
 }
