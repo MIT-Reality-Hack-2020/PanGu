@@ -1,0 +1,88 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel Verlet
+#pragma kernel DensityPressure
+#pragma kernel Force
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+//RWTexture2D<float4> Result;
+
+struct GPUParticle {
+     float3 position;
+     float  density;
+     float3 velocity;
+     float  pressure;
+     float3 force;
+     //float  temperature;
+     uint   type; // 0 = earth, 1 = water, 2 = fire, 3 = wood, 4 = metal
+};
+
+  StructuredBuffer<GPUParticle> lastParticles;
+RWStructuredBuffer<GPUParticle> nextParticles;
+
+uint particleCount;
+
+float pi = 3.14159274;
+
+// particle physical properties (move to per-particle buffer?)
+float particleMass = 0.02;
+float particleRadius  = 0.005;
+float particleStiffness = 2000.0;
+float particleRestingDensity = 1000.0;
+float particleViscosity = 1000.0;
+
+float smoothingLength = 0.020;
+float timeStep = 1.0 / 60.0;
+float3 gravity = float3(0, -9.82, 0);
+
+[numthreads(128,1,1)]
+void Verlet (uint id : SV_DispatchThreadID)
+{
+    GPUParticle lastParticle = lastParticles[id];
+    float3 acceleration = lastParticle.force / lastParticle.density;
+    float3 velocity = lastParticle.velocity + timeStep * acceleration;
+    float3 position = lastParticle.position + timeStep * velocity;
+
+    // TODO: apply sphere constraint
+    
+    lastParticle.velocity = velocity;
+    lastParticle.position = position;
+    
+    nextParticles[id] = lastParticle;
+}
+
+[numthreads(128,1,1)]
+void DensityPressure(uint id : SV_DispatchThreadID) 
+{
+    GPUParticle lastParticle = lastParticles[id];
+    float densitySum = 0.0;
+    
+    // TODO: optimize!!! needs spatial partitioning
+    for (int i = 0; i < particleCount; i++) {
+        if (id == i) continue;
+        float3 delta = lastParticle.position - nextParticles[i].position;
+        float distance = length(delta);
+        if (distance < smoothingLength) {
+            densitySum += particleMass * 315.0 * pow(smoothingLength * smoothingLength - distance * distance, 3.0) / (64.0 * pi * pow(smoothingLength, 9.0));
+        }
+    }
+    
+    lastParticle.density = densitySum;
+    lastParticle.pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
+    nextParticles[id] = lastParticle;
+}
+
+// TODO: could this be rolled into DensityPressure kernel? avoid calculating delta twice etc
+[numthreads(128,1,1)]
+void Force(uint id : SV_DispatchThreadID)
+{
+    GPUParticle lastParticle = lastParticles[id];
+    float3 pressureForce;
+    float3 viscosityForce;
+
+    // TODO: optimize!!! needs spatial partitioning
+    for (int i = 0; i < particleCount; i++) {
+        if (id == i) continue;
+        float3 delta = lastParticle.position - nextParticles[i].position;
+    }
+}
