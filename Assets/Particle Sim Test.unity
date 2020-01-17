@@ -246,16 +246,16 @@ MonoBehaviour:
   particleMesh: {fileID: 289301614986012343, guid: 500a78808be29694383c1827c70a6ae8,
     type: 3}
   particleCount: 10000
-  particleMass: 0.02
-  particleRadius: -0.1
-  particleStiffness: 1
-  particleRestingDensity: 100
-  particleViscosity: 0.1
-  smoothingLength: 0.2
+  particleMass: 0.03
+  particleRadius: -0.25
+  particleStiffness: 10
+  particleRestingDensity: 20
+  particleViscosity: 1
+  smoothingLength: 0.15
   timeStep: 0.016666668
   gravity:
     x: 0
-    y: 0
+    y: -3
     z: 0
     w: 0
 --- !u!4 &1199329838

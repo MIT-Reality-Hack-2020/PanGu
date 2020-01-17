@@ -60,7 +60,7 @@ public class ParticleSimManager : MonoBehaviour {
         for (int i = 0; i < particleCount; i++) {
             initialParticles[i] = new GPUParticle();
             initialParticles[i].position = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
-            initialParticles[i].velocity = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
+            //initialParticles[i].velocity = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
             initialParticles[i].density = particleRestingDensity;
             initialParticles[i].pressure = 1f;
             //Debug.Log($"{initialParticles[i].position} {initialParticles[i].velocity}");

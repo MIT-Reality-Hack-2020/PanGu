@@ -40,19 +40,16 @@ void Verlet (uint id : SV_DispatchThreadID)
     GPUParticle thisParticle = particles[id]; 
     float3 acceleration = thisParticle.force / thisParticle.density;
     float3 velocity = thisParticle.velocity + timeStep * acceleration;// + timeStep * gravity;
+    
     float3 position = thisParticle.position + timeStep * velocity; 
-    velocity *= 0.97;
+    velocity *= 0.985;
 
     // TODO: apply sphere constraint
-    
-    /*
     if (length(position) > 3.0) {
         position = normalize(position) * 3.0;
         //velocity -= normalize(position) * particleRadius;
-        velocity *= -particleRadius;
+        velocity *= particleRadius;
     }
-    */
-    
     
     particles[id].velocity = velocity;
     particles[id].position = position;
@@ -65,11 +62,10 @@ void DensityPressure(uint id : SV_DispatchThreadID)
         return;
 
     GPUParticle thisParticle = particles[id];
-    float densitySum = 0.00001;
+    float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
     for (uint i = 0; i < particleCount; i++) {
-        if (id == i) continue;
         float3 delta = thisParticle.position - particles[i].position;
         float distance = length(delta);
         if (distance < smoothingLength) {
