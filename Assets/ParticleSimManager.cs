@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.UI;
 using Random = Unity.Mathematics.Random;
 
 public class ParticleSimManager : MonoBehaviour {
@@ -13,11 +14,11 @@ public class ParticleSimManager : MonoBehaviour {
     public uint particleCount = 1000;
 
     public float  particleMass;
-    public float  particleRadius;
+    public float  wallDamping;
     public float  particleStiffness;
     public float  particleRestingDensity;
     public float  particleViscosity;
-    public float  smoothingLength;
+    [Range(0f, 0.5f)] public float  smoothingLength;
     public float  timeStep;
     public float4 gravity;
 
@@ -54,9 +55,19 @@ public class ParticleSimManager : MonoBehaviour {
         args[0] = particleMesh.GetIndexCount(0);
         args[2] = particleMesh.GetIndexStart(0);
         args[3] = particleMesh.GetBaseVertex(0);
-                                                                      
+        
+        InitializeParticles();
+    }
+
+    private void OnGUI() {
+        if (GUI.Button(new Rect(10f, 10f, 200f, 20f), "Reinit")) 
+            InitializeParticles();
+    }
+
+    private void InitializeParticles() {
         var initialParticles = new GPUParticle[particleCount];
-        var rand = new Random((uint)gameObject.GetInstanceID());
+        
+        var rand = new Random((uint)Mathf.RoundToInt(Time.time * 100000f + 1f));
         for (int i = 0; i < particleCount; i++) {
             initialParticles[i] = new GPUParticle();
             initialParticles[i].position = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
@@ -94,7 +105,7 @@ public class ParticleSimManager : MonoBehaviour {
         
         particleSimShader.SetFloat("pi", Mathf.PI);
         particleSimShader.SetFloat("particleMass", particleMass);
-        particleSimShader.SetFloat("particleRadius", particleRadius);
+        particleSimShader.SetFloat("wallDamping", wallDamping);
         particleSimShader.SetFloat("particleStiffness", particleStiffness);
         particleSimShader.SetFloat("particleRestingDensity", particleRestingDensity);
         particleSimShader.SetFloat("particleViscosity", particleViscosity);
