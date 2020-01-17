@@ -12,6 +12,15 @@ public class ParticleSimManager : MonoBehaviour {
 
     public uint particleCount = 1000;
 
+    public float  particleMass;
+    public float  particleRadius;
+    public float  particleStiffness;
+    public float  particleRestingDensity;
+    public float  particleViscosity;
+    public float  smoothingLength;
+    public float  timeStep;
+    public float4 gravity;
+
     private ComputeBuffer drawArgs;
     private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
 
@@ -51,7 +60,7 @@ public class ParticleSimManager : MonoBehaviour {
         for (int i = 0; i < particleCount; i++) {
             initialParticles[i] = new GPUParticle();
             initialParticles[i].position = rand.NextFloat3(new float3(-10f, -10f, -10f), new float3(10f, 10f, 10f));
-            initialParticles[i].velocity = rand.NextFloat3(new float3(-10f, -10f, -10f), new float3(10f, 10f, 10f));
+            initialParticles[i].velocity = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
             //Debug.Log($"{initialParticles[i].position} {initialParticles[i].velocity}");
         }
         
@@ -77,6 +86,19 @@ public class ParticleSimManager : MonoBehaviour {
         particleSimShader.SetInt("particleCount", (int)particleCount);
         
         PingPongBuffers();
+        
+        particleSimShader.SetFloat("pi", Mathf.PI);
+        particleSimShader.SetFloat("particleMass", particleMass);
+        particleSimShader.SetFloat("particleRadius", particleRadius);
+        particleSimShader.SetFloat("particleStiffness", particleStiffness);
+        particleSimShader.SetFloat("particleRestingDensity", particleRestingDensity);
+        particleSimShader.SetFloat("particleViscosity", particleViscosity);
+        particleSimShader.SetFloat("smoothingLength", smoothingLength);
+        particleSimShader.SetFloat("timeStep", timeStep);
+        particleSimShader.SetVector("gravity", gravity);
+        
+        particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(forceIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
         particleSimShader.Dispatch(verletIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
     }
 

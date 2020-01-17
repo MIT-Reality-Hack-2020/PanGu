@@ -27,29 +27,26 @@ float particleRestingDensity = 1000.0;
 float particleViscosity      = 1000.0;
 
 float smoothingLength = 0.020;
-float timeStep = 1.0 / 60.0;
+float timeStep = 0.01666;
 float3 gravity = float3(0, -9.82, 0);
 
 [numthreads(128,1,1)]
 void Verlet (uint id : SV_DispatchThreadID)
 {
-    //if (id > particleCount)
-    //    return;
+    if (id > particleCount)
+        return;
 
     GPUParticle lastParticle = lastParticles[id];
-    //float3 acceleration = lastParticle.force / lastParticle.density;
-    //float3 acceleration 
-    float3 velocity = lastParticle.velocity;// + timeStep * acceleration;
-    float3 position = lastParticle.position + 0.1 * velocity;
+    float3 acceleration = 0;//lastParticle.force / lastParticle.density;
+    float3 velocity = lastParticle.velocity + timeStep * acceleration;
+    float3 position = lastParticle.position + timeStep * velocity;
 
     // TODO: apply sphere constraint
     
-    //lastParticle.velocity = velocity;
-    //lastParticle.position = position;
+    lastParticle.velocity = velocity;
+    lastParticle.position = position;
     
-    //nextParticles[id] = lastParticle;
-    nextParticles[id].position = position;
-    //nextParticles[id].position += float3(0.0, 0.1, 0.0);
+    nextParticles[id] = lastParticle;
 }
 
 [numthreads(128,1,1)]
@@ -64,7 +61,7 @@ void DensityPressure(uint id : SV_DispatchThreadID)
     // TODO: optimize!!! needs spatial partitioning
     for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
-        float3 delta = lastParticle.position - nextParticles[i].position;
+        float3 delta = lastParticle.position - lastParticles[i].position;
         float distance = length(delta);
         if (distance < smoothingLength) {
             densitySum += particleMass * 315.0 * pow(smoothingLength * smoothingLength - distance * distance, 3.0) / (64.0 * pi * pow(smoothingLength, 9.0));
@@ -90,6 +87,19 @@ void Force(uint id : SV_DispatchThreadID)
     // TODO: optimize!!! needs spatial partitioning
     for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
-        float3 delta = lastParticle.position - nextParticles[i].position;
+        float3 delta = lastParticle.position - lastParticles[i].position;
+        float distance = length(delta);
+        if (distance < smoothingLength) {
+            pressureForce -= particleMass * (lastParticle.pressure - lastParticles[i].pressure) / (2.0 * lastParticles[i].density) *
+                -45.0 / (pi * pow(smoothingLength, 6)) * pow(smoothingLength - distance, 2.0) * normalize(delta);
+                
+            viscosityForce += particleMass * (lastParticles[i].velocity - lastParticle.velocity) / lastParticles[i].density *
+                45.0 / (pi * pow(smoothingLength, 6)) * (smoothingLength - distance);
+        }
     }
+    
+    viscosityForce *= particleViscosity;
+    float3 externalForce = gravity;
+    
+    nextParticles[id].force = pressureForce + viscosityForce + externalForce;
 }

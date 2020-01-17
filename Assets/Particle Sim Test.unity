@@ -245,6 +245,18 @@ MonoBehaviour:
     type: 2}
   particleMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   particleCount: 1000
+  particleMass: 0.02
+  particleRadius: 0.005
+  particleStiffness: 2000
+  particleRestingDensity: 1000
+  particleViscosity: 1000
+  smoothingLength: 0.02
+  timeStep: 0.016666668
+  gravity:
+    x: 0
+    y: -9.82
+    z: 0
+    w: 0
 --- !u!4 &1199329838
 Transform:
   m_ObjectHideFlags: 0

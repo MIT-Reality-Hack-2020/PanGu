@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="de6515c0-58f0-48f9-8e85-f2d89c4f1741" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Instanced_InstancedSurfaceShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Instanced_InstancedSurfaceShader.mat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ParticleSim.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ParticleSim.compute" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/ParticleSimManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ParticleSimManager.cs" afterDir="false" />
     </list>
@@ -30,8 +28,8 @@
       <list>
         <option value="$PROJECT_DIR$/Assets/PlantManager.cs" />
         <option value="$PROJECT_DIR$/Assets/InstancedParticleMesh.shader" />
-        <option value="$PROJECT_DIR$/Assets/ParticleSimManager.cs" />
         <option value="$PROJECT_DIR$/Assets/ParticleSim.compute" />
+        <option value="$PROJECT_DIR$/Assets/ParticleSimManager.cs" />
       </list>
     </option>
   </component>
