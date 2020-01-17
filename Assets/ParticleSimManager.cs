@@ -87,10 +87,10 @@ public class ParticleSimManager : MonoBehaviour {
         //Debug.Log($"{particleCount}");
         particleSimShader.SetInt("particleCount", (int)particleCount);
         
-        //PingPongBuffers();
-        particleSimShader.SetBuffer(verletIndex, "particles", particleBufferA);
-        particleSimShader.SetBuffer(densityPressureIndex, "particles", particleBufferA);
-        particleSimShader.SetBuffer(forceIndex, "particles", particleBufferA);
+        PingPongBuffers();
+        //particleSimShader.SetBuffer(verletIndex, "particles", particleBufferA);
+        //particleSimShader.SetBuffer(densityPressureIndex, "particles", particleBufferA);
+        //particleSimShader.SetBuffer(forceIndex, "particles", particleBufferA);
         
         particleSimShader.SetFloat("pi", Mathf.PI);
         particleSimShader.SetFloat("particleMass", particleMass);
@@ -117,8 +117,8 @@ public class ParticleSimManager : MonoBehaviour {
         drawArgs.SetData(args);
         
         particleDebugMaterial.SetPass(0);
-        //particleDebugMaterial.SetBuffer("_ParticleBuffer", pingPong ? particleBufferA : particleBufferB);
-        particleDebugMaterial.SetBuffer("_ParticleBuffer", particleBufferA);
+        particleDebugMaterial.SetBuffer("_ParticleBuffer", pingPong ? particleBufferA : particleBufferB);
+        //particleDebugMaterial.SetBuffer("_ParticleBuffer", particleBufferA);
         
         Graphics.DrawMeshInstancedIndirect(particleMesh, 0, particleDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), drawArgs);
     }
