@@ -258,6 +258,16 @@ MonoBehaviour:
     y: -3
     z: 0
     w: 0
+  args:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  pingPong: 0
+  verletIndex: 0
+  densityPressureIndex: 0
+  forceIndex: 0
 --- !u!4 &1199329838
 Transform:
   m_ObjectHideFlags: 0

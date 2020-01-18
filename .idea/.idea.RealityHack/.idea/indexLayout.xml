@@ -17,6 +17,8 @@
       <Path>Library/PackageCache/com.unity.rendering.hybrid@0.1.1-preview</Path>
       <Path>Library/PackageCache/com.unity.test-framework@1.0.13</Path>
       <Path>Library/PackageCache/com.unity.textmeshpro@2.0.1</Path>
+      <Path>Library/PackageCache/com.unity.xr.oculus.standalone@1.38.4</Path>
+      <Path>Library/PackageCache/com.unity.xr.openvr.standalone@1.0.5</Path>
       <Path>Library/PackageCache/nuget.mono-cecil@0.1.6-preview</Path>
       <Path>Packages</Path>
       <Path>ProjectSettings</Path>
