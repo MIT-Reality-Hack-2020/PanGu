@@ -280,7 +280,8 @@ MonoBehaviour:
     type: 2}
   particleMesh: {fileID: 289301614986012343, guid: 7b7a32cabaddc2b449091bb05a40496f,
     type: 3}
-  particleCount: 10000
+  particleCount: 25000
+  boundsSize: 2
   particleMass: 0.00025
   wallDamping: -0.3
   particleStiffness: 3
@@ -582,7 +583,7 @@ MonoBehaviour:
     type: 2}
   particleMesh: {fileID: 289301614986012343, guid: 7b7a32cabaddc2b449091bb05a40496f,
     type: 3}
-  particleCount: 25000
+  particleCount: 10000
   boundaryDistance: 1.25
   particleMass: 0.00025
   wallDamping: -0.3

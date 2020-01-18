@@ -16,6 +16,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
     public uint particleCount = 1000;
 
+    public float boundsSize;
     public float  particleMass;
     public float  wallDamping;
     public float  particleStiffness;
@@ -173,7 +174,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         var populateSpatialHashMapJob = new PopulateSpatialHashMapJob();
         populateSpatialHashMapJob.particleSpatialHashMapWriter = particleSpatialHashMap.AsParallelWriter();
-        populateSpatialHashMapJob.boundsSize = 1f;
+        populateSpatialHashMapJob.boundsSize = boundsSize;
         populateSpatialHashMapJob.cellSize = smoothingLength;
         populateSpatialHashMapJob.particles = particleList;
 
@@ -190,13 +191,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         populateNeighborListArraysHandle.Complete();
         particleSpatialHashMap.Dispose();
-        
-        Debug.Log($"{neighborInfoNativeArray[0].count} {neighborInfoNativeArray[0].startIndex}");
-        Debug.Log($"{neighborInfoNativeArray[32].count} {neighborInfoNativeArray[32].startIndex}");
-        Debug.Log($"{neighborInfoNativeArray[55].count} {neighborInfoNativeArray[55].startIndex}");
-        Debug.Log($"{neighborInfoNativeArray[125].count} {neighborInfoNativeArray[125].startIndex}");
-        Debug.Log($"{neighborListNativeArray[0]}");
-        
+
         neighborInfoBuffer.SetData(neighborInfoNativeArray);
         neighborListBuffer.SetData(neighborListNativeArray);
         
@@ -229,6 +224,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetFloat("smoothingLength", smoothingLength);
         particleSimShader.SetFloat("interactionLength", interactionLength);
         particleSimShader.SetFloat("timeStep", timeStep);
+        particleSimShader.SetFloat("boundsSize", boundsSize);
         particleSimShader.SetVector("gravity", gravity);
         
         particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);

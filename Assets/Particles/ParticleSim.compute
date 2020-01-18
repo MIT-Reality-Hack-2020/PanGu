@@ -38,6 +38,8 @@ float particleStiffness      = 2000.0;
 float particleRestingDensity = 1000.0;
 float particleViscosity      = 1000.0;
 
+float boundsSize;
+
 float smoothingLength = 0.020;
 float interactionLength;
 float timeStep = 0.01666;
@@ -60,8 +62,8 @@ void Verlet (uint id : SV_DispatchThreadID)
     //velocity *= 0.985;
 
     // TODO: apply sphere constraint
-    if (length(position) > 1.0) {
-        position = normalize(position) * 1.0;
+    if (length(position) > boundsSize) {
+        position = normalize(position) * boundsSize;
         //velocity -= normalize(position) * particleRadius;
         velocity *= wallDamping;
     }
@@ -80,7 +82,8 @@ void DensityPressure(uint id : SV_DispatchThreadID)
     float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
-    for (uint i = 0; i < particleCount; i++) {
+    for (uint j = 0; j < neighborInfo[id].count; j++) {
+        uint i = neighborLists[neighborInfo[id].startIndex + j];
         float3 delta = thisParticle.position - particles[i].position;
         float distance = length(delta);
         if (distance < smoothingLength) {
@@ -125,8 +128,8 @@ void Force(uint id : SV_DispatchThreadID)
     float3 pressureForce = float3(0,0,0);
     float3 viscosityForce = float3(0,0,0);
 
-    // TODO: optimize!!! needs spatial partitioning
-    for (uint i = 0; i < particleCount; i++) {
+    for (uint j = 0; j < neighborInfo[id].count; j++) {
+        uint i = neighborLists[neighborInfo[id].startIndex + j];
         if (id == i) continue;
         float3 delta = thisParticle.position - particles[i].position;
         float distance = length(delta);
