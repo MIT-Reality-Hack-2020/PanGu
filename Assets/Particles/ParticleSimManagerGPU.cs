@@ -139,12 +139,12 @@ public class ParticleSimManagerGPU : MonoBehaviour {
                         int hash = (int) math.hash(thisBucket + new int3(x, y, z));
                         if (particleSpatialHashMap.ContainsKey(hash)) {
                             var enumerator = particleSpatialHashMap.GetValuesForKey(hash);
-                            do {
+                            while (enumerator.MoveNext()) {
                                 if (neighbors < 32) {
                                     neighborList[i * 32 + neighbors] = enumerator.Current;
                                     neighbors++;
                                 }
-                            } while (enumerator.MoveNext());
+                            }
                         }
                     }
                 }
@@ -191,6 +191,12 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         populateNeighborListArraysHandle.Complete();
         particleSpatialHashMap.Dispose();
         
+        Debug.Log($"{neighborInfoNativeArray[0].count} {neighborInfoNativeArray[0].startIndex}");
+        Debug.Log($"{neighborInfoNativeArray[32].count} {neighborInfoNativeArray[32].startIndex}");
+        Debug.Log($"{neighborInfoNativeArray[55].count} {neighborInfoNativeArray[55].startIndex}");
+        Debug.Log($"{neighborInfoNativeArray[125].count} {neighborInfoNativeArray[125].startIndex}");
+        Debug.Log($"{neighborListNativeArray[0]}");
+        
         neighborInfoBuffer.SetData(neighborInfoNativeArray);
         neighborListBuffer.SetData(neighborListNativeArray);
         
@@ -198,13 +204,13 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         neighborListNativeArray.Dispose();
         particleList.Dispose();
 
-        particleSimShader.SetBuffer(verletIndex, "particles", neighborInfoBuffer);
-        particleSimShader.SetBuffer(densityPressureIndex, "particles", neighborInfoBuffer);
-        particleSimShader.SetBuffer(forceIndex, "particles", neighborInfoBuffer);
+        particleSimShader.SetBuffer(verletIndex, "neighborInfo", neighborInfoBuffer);
+        particleSimShader.SetBuffer(densityPressureIndex, "neighborInfo", neighborInfoBuffer);
+        particleSimShader.SetBuffer(forceIndex, "neighborInfo", neighborInfoBuffer);
         
-        particleSimShader.SetBuffer(verletIndex, "particles", neighborListBuffer);
-        particleSimShader.SetBuffer(densityPressureIndex, "particles", neighborListBuffer);
-        particleSimShader.SetBuffer(forceIndex, "particles", neighborListBuffer);
+        particleSimShader.SetBuffer(verletIndex, "neighborLists", neighborListBuffer);
+        particleSimShader.SetBuffer(densityPressureIndex, "neighborLists", neighborListBuffer);
+        particleSimShader.SetBuffer(forceIndex, "neighborLists", neighborListBuffer);
         
         //Debug.Log($"{particleCount}");
         particleSimShader.SetInt("particleCount", (int)particleCount);
