@@ -16,8 +16,15 @@ struct GPUParticle {
      float  pad1;
 };
 
+struct NeighborsInfo {
+    int startIndex;
+    int count;
+};
+
   //StructuredBuffer<GPUParticle> lastParticles;
 //RWStructuredBuffer<GPUParticle> nextParticles;
+  StructuredBuffer<NeighborsInfo> neighborInfo;
+  StructuredBuffer<int> neighborLists;
 RWStructuredBuffer<GPUParticle> particles;
 
 int particleCount;
@@ -78,9 +85,14 @@ void DensityPressure(uint id : SV_DispatchThreadID)
         float distance = length(delta);
         if (distance < smoothingLength) {
             densitySum += particleMass * 315.0 * pow(smoothingLength * smoothingLength - distance * distance, 3.0) / (64.0 * pi * pow(smoothingLength, 9.0));
+            
+            // you'd think this would be a divergence madhouse but it's still much faster than CPU implementation
             if (thisParticle.type == 1 && distance < interactionLength) {
                 if (particles[i].type == 2) {
-                    particles[i].type = 1;
+                    particles[i].temperature += 0.5;
+                    if (particles[i].temperature > 1) {
+                        particles[i].type = 1;
+                    } 
                 }
                 
                 if (particles[i].type == 0) {
