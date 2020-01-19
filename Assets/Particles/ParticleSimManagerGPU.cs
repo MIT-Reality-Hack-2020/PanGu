@@ -305,7 +305,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetVector(positionString, spawnPointPosition);
         particleSimShader.SetFloat(strengthString, handTrigger);
         
-        Debug.Log(gesture);
+        //Debug.Log(gesture);
         
         switch (gesture) {
             case HandController.Gesture.None:
