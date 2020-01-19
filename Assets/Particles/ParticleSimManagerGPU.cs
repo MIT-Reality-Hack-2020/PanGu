@@ -334,23 +334,26 @@ public class ParticleSimManagerGPU : MonoBehaviour {
                 }
                 break;
             case HandController.Gesture.Pinch:
-                // TODO
                 particleSimShader.SetInt(modeString, 2);
                 break;
             case HandController.Gesture.Point:
-                /*
                 switch (currentElement) {
                     case HandController.Element.Water:
-                        particleSimShader.SetInt(modeString, 2);
-                        break;
-                    case HandController.Element.Fire:
                         particleSimShader.SetInt(modeString, 3);
                         break;
-                    case HandController.Element.Wood:
+                    case HandController.Element.Fire:
                         particleSimShader.SetInt(modeString, 4);
                         break;
+                    case HandController.Element.Wood:
+                        particleSimShader.SetInt(modeString, 5);
+                        break;
+                    case HandController.Element.Earth:
+                        particleSimShader.SetInt(modeString, 6);
+                        break;
+                    case HandController.Element.Metal:
+                        particleSimShader.SetInt(modeString, 7);
+                        break;
                 }
-                */
                 break;
         }
     }

@@ -208,19 +208,19 @@ void HandInput(uint id : SV_DispatchThreadID) {
         thisParticle.force -= (leftHandDelta * 5.0) / pow(leftHandDist, 2.0); // * thisParticle.density?
     } else if (leftHandMode == 2 && leftHandDist < 0.15) {
         thisParticle.remainingLifetime = -1.0;
-    }
-    
-    /* else if (leftHandMode >= 2 && leftHandMode <= 6 && leftHandDist < leftHandStrength * 0.35f) {
-    
-        if (leftHandMode == 2) {
+    } else if (leftHandMode >= 3 && leftHandMode <= 7 && leftHandDist < 0.15) {
+        if (leftHandMode == 3) {
             thisParticle.type = 0;
-        } else if (leftHandMode == 3) {
-            thisParticle.type = 1;
         } else if (leftHandMode == 4) {
+            thisParticle.type = 1;
+        } else if (leftHandMode == 5) {
             thisParticle.type = 2;
+        } else if (leftHandMode == 6) {
+            thisParticle.type = 3;
+        } else if (leftHandMode == 7) {
+            thisParticle.type = 4;
         }
-        
-    }*/
+    }
     
     float3 rightHandDelta = thisParticle.position - rightHandPosition;
     float rightHandDist = length(rightHandDelta);
@@ -228,20 +228,19 @@ void HandInput(uint id : SV_DispatchThreadID) {
         thisParticle.force -= (rightHandDelta * 5.0) / pow(rightHandDist, 2.0); // * thisParticle.density?
     } else if (rightHandMode == 2 && rightHandDist < 0.15) {
         thisParticle.remainingLifetime = -1.0;
-    }
-    
-    
-    /*else if (rightHandMode >= 2 && rightHandMode <= 6 && rightHandDist < rightHandStrength * 0.35f) {
-    
-        if (rightHandMode == 2) {
+    } else if (rightHandMode >= 3 && rightHandMode <= 7 && rightHandDist < 0.15) {
+        if (rightHandMode == 3) {
             thisParticle.type = 0;
-        } else if (rightHandMode == 3) {
-            thisParticle.type = 1;
         } else if (rightHandMode == 4) {
+            thisParticle.type = 1;
+        } else if (rightHandMode == 5) {
             thisParticle.type = 2;
+        } else if (rightHandMode == 6) {
+            thisParticle.type = 3;
+        } else if (rightHandMode == 7) {
+            thisParticle.type = 4;
         }
-        
-    }*/
+    }
     
     particles[id] = thisParticle;
 }
