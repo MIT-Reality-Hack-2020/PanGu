@@ -35,7 +35,7 @@ public class RightHanController : MonoBehaviour
     {
 
         //Fist Gesture
-        if(OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) && OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.RawButton.Y))
+        if(OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger) && OVRInput.Get(OVRInput.RawButton.B))
         {
             if (!fistIsPlayed)
             {
@@ -60,7 +60,7 @@ public class RightHanController : MonoBehaviour
 
 
         //Handgun Gesture
-        if(!OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) && OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && !OVRInput.Get(OVRInput.RawButton.Y))
+        if(!OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger) && !OVRInput.Get(OVRInput.RawButton.B))
         {
             if (!sprayIsPlayed)
             {
@@ -79,7 +79,7 @@ public class RightHanController : MonoBehaviour
 
 
         //Pinch Gesture
-        if(OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) && !OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.RawButton.Y))
+        if(OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger) && !OVRInput.Get(OVRInput.Button.SecondaryHandTrigger) && OVRInput.Get(OVRInput.RawButton.B))
         {
             
         }
@@ -89,7 +89,7 @@ public class RightHanController : MonoBehaviour
         }
 
         //Point Gesture
-        if(!OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger) && OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.RawButton.Y))
+        if(!OVRInput.Get(OVRInput.Button.SecondaryIndexTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger) && OVRInput.Get(OVRInput.RawButton.B))
         {
             
         }
