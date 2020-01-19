@@ -24,9 +24,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Glossiness: 0.5
+    - _Glossiness: 0.05
     - _Metallic: 0
     m_Colors:
+    - _EarthColor: {r: 0.509434, g: 0.4003983, b: 0.21867214, a: 1}
     - _FireColor: {r: 0.7735849, g: 0, b: 0.062279217, a: 1}
+    - _MetalColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+    - _SeedColor: {r: 0.8207547, g: 0.61113214, b: 0.30584726, a: 1}
     - _WaterColor: {r: 0.23829652, g: 0.64253426, b: 0.990566, a: 1}
     - _WoodColor: {r: 0.11408985, g: 0.50980395, b: 0.07058824, a: 1}
+    - _WoodColorNew: {r: 0.09732112, g: 0.764151, b: 0.11896513, a: 1}
+    - _WoodColorOld: {r: 0.3679245, g: 0.21637, b: 0.098923095, a: 1}

@@ -12,7 +12,7 @@ struct GPUParticle {
      float  pressure;
      float3 force;
      //float  temperature;
-     uint   type; // 0 = water, 1 = fire, 2 = wood, 3 = earth, 4 = metal
+     uint   type; // 0 = water, 1 = fire, 2 = wood, 3 = earth, 4 = metal, 5 = seed
      float  temperature;
      float  remainingLifetime;
      float  pad0;
@@ -57,6 +57,10 @@ float3 rightHandPosition;
 int    rightHandMode;
 float  rightHandStrength;
 
+float rand (float n) {
+    return frac(sin(n) * 43758.5453123);
+}
+
 [numthreads(128,1,1)]
 void Verlet (uint id : SV_DispatchThreadID) {
     if (id > particleCount)
@@ -66,8 +70,11 @@ void Verlet (uint id : SV_DispatchThreadID) {
     float3 acceleration = thisParticle.force / thisParticle.density;
     float3 velocity = thisParticle.velocity + timeStep * acceleration;// + timeStep * gravity;
     
-    if (thisParticle.type == 2)
+    if (thisParticle.type == 3 || thisParticle.type == 4) {
         velocity = float3(0,0,0);
+    } else if (thisParticle.type == 2) { 
+        velocity *= 0.10;
+    }
     
     float3 position = thisParticle.position + timeStep * velocity; 
     //velocity *= 0.985;
@@ -95,37 +102,51 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
     //for (uint j = 0; j < neighborInfo[id].count; j++) {
     //    uint i = neighborLists[neighborInfo[id].startIndex + j];
     for (uint i = 0; i < particleCount; i++) {
-        float3 delta = thisParticle.position - particles[i].position;
+        GPUParticle otherParticle = particles[i];
+        float3 delta = thisParticle.position - otherParticle.position;
         float distance = length(delta);
         if (distance < smoothingLength) {
             densitySum += particleMass * 315.0 * pow(smoothingLength * smoothingLength - distance * distance, 3.0) / (64.0 * pi * pow(smoothingLength, 9.0));
             
             // you'd think this would be a divergence madhouse but it's still much faster than CPU implementation
-            if (thisParticle.type == 1 && distance < interactionLength) {
-                if (particles[i].type == 2) {
-                    particles[i].temperature += 0.5;
-                    if (particles[i].temperature > 1) {
-                        particles[i].type = 1;
-                    } 
+            if (thisParticle.type == 1/* && distance < interactionLength*/) {
+                if (otherParticle.type == 2) {
+                    //particles[i].temperature += 0.5;
+                    //if (particles[i].temperature > 1) {
+                        otherParticle.type = 1;
+                        otherParticle.remainingLifetime = 1.0;
+                    //} 
                 }
                 
-                if (particles[i].type == 0) {
-                    thisParticle.type = 0;
-                    particles[i].velocity *= 1.5;
+                if (otherParticle.type == 0) {
+                    //thisParticle.type = 0;
+                    thisParticle.remainingLifetime -= 0.5;
+                    otherParticle.velocity *= 1.5;
                 } 
             }
             
-            if (thisParticle.type == 2 && distance < interactionLength) {
-                if (particles[i].type == 0) {
-                    particles[i].type = 2;
+            if (thisParticle.type == 2/* && distance < interactionLength*/) {
+                if (otherParticle.type == 0) {
+                    //particles[i].type = 2;
+                    otherParticle.remainingLifetime -= 5.0;
+                    thisParticle.remainingLifetime += 0.25;
                 }
             }
+            
+            if (thisParticle.type == 5/* && distance < interactionLength*/) {
+                if (otherParticle.type == 3) {
+                    thisParticle.type = 2;
+                    thisParticle.remainingLifetime += 3.0;
+                }
+            }
+            
+            particles[i] = otherParticle;
         }
     }
     
-    particles[id].density = densitySum;
-    particles[id].pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
-    //particles[id] = thisParticle;
+    thisParticle.density = densitySum;
+    thisParticle.pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
+    particles[id] = thisParticle;
 }
 
 // TODO: could this be rolled into DensityPressure kernel? avoid calculating delta twice etc
@@ -157,8 +178,9 @@ void Force(uint id : SV_DispatchThreadID) {
     if (length(viscosityForce) > 50.0)
         viscosityForce = normalize(viscosityForce) * 50.0;
         
-    if (thisParticle.type == 1)
+    if (thisParticle.type == 1) {
         gravity = -gravity;
+    }
         
     float3 externalForce = gravity * thisParticle.density;
     
@@ -173,7 +195,7 @@ void HandInput(uint id : SV_DispatchThreadID) {
     GPUParticle thisParticle = particles[id];
 
     // mode enum: 0 = none, 1 = fist, 2 = point (water), 3 = point (fire), 4 = point (wood)
-    // type enum: 0 = water, 1 = fire, 2 = wood, 3 = earth, 4 = metal
+    // type enum: 0 = water, 1 = fire, 2 = wood, 3 = earth, 4 = metal, 5 = seed
     float3 leftHandDelta = thisParticle.position - leftHandPosition;
     float leftHandDist = length(leftHandDelta);
     if (leftHandMode == 1) {
@@ -212,9 +234,24 @@ void PickNewParticles(uint id : SV_DispatchThreadID) {
         
     GPUParticle thisParticle = particles[id];
     
-    if (particles[id].type == 1) {
+    if (thisParticle.type == 1 || thisParticle.type == 5) {
         thisParticle.remainingLifetime -= timeStep;
-    }
+    } else if (thisParticle.type == 2) {
+        thisParticle.remainingLifetime -= timeStep / 7.5;
+        if (thisParticle.remainingLifetime > 3.0) {
+            GPUParticle newWoodParticle = particles[id];
+            newWoodParticle.remainingLifetime = thisParticle.remainingLifetime - 2.0;
+            newWoodParticle.position = thisParticle.position + float3(
+                (rand(thisParticle.position.x) - 0.5) / 20.0,
+                (rand(thisParticle.position.y) - 0.5) / 20.0 + (1.0/50.0),
+                (rand(thisParticle.position.z) - 0.5) / 20.0 
+            );
+            nextParticles.Append(newWoodParticle);
+            thisParticle.remainingLifetime = 1.0;
+        }
+    }// else {
+    //    thisParticle.remainingLifetime -= timeStep / 30.0;
+    //}
 
     if (particles[id].remainingLifetime > 0.0) {
         nextParticles.Append(thisParticle);

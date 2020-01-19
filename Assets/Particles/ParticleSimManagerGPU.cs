@@ -269,6 +269,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
     private void OnDestroy() {
         particleBufferA.Release();
+        particleAppendBuffer.Release();
     }
 
     private void LateUpdate() {
@@ -288,7 +289,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         //particleList = ;
     }
 
-    public void SpawnParticle(float3 position, float3 velocity, HandController.Element element) {
+    public void SpawnParticle(float3 position, float3 velocity, int element) {
         GPUParticle newParticle = new GPUParticle {position = position, velocity = velocity, type = (uint)element, remainingLifetime = 1f};
         particleBufferA.SetData(new[] { newParticle }, 0, (int)particleCount - 1, 1);
         particleCount++;
@@ -321,7 +322,10 @@ public class ParticleSimManagerGPU : MonoBehaviour {
                         UnityEngine.Random.Range(-.1f, .1f),
                         UnityEngine.Random.Range(-.1f, .1f)
                     );
-                    SpawnParticle(spawnPointPosition + randomPosition, (randomForce + 10f) * (handTrigger - 0.25f) * transformForward, currentElement);
+                    if (currentElement == HandController.Element.Wood)
+                        SpawnParticle(spawnPointPosition + randomPosition, (randomForce + 10f) * (handTrigger - 0.25f) * transformForward, 5);
+                    else 
+                        SpawnParticle(spawnPointPosition + randomPosition, (randomForce + 10f) * (handTrigger - 0.25f) * transformForward, (int)currentElement);
                 }
                 break;
             case HandController.Gesture.Pinch:

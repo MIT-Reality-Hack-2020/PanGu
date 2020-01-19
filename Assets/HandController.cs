@@ -10,7 +10,7 @@ public class HandController : MonoBehaviour
     }
 
     public enum Element {
-        Water, Fire, Wood
+        Water, Fire, Wood, Earth, Metal
     }
 
     public enum Gesture {
@@ -34,12 +34,19 @@ public class HandController : MonoBehaviour
     private void CycleElement() {
         switch (currentElement) {
             case Element.Water:
-                currentElement = Element.Fire;
+                currentElement = Element.Earth;
                 break;
-            case Element.Fire:
+            case Element.Earth:
                 currentElement = Element.Wood;
                 break;
             case Element.Wood:
+                //currentElement = Element.Metal;
+                currentElement = Element.Fire;
+                break;
+            case Element.Fire:
+                currentElement = Element.Water;
+                break;
+            case Element.Metal:
                 currentElement = Element.Water;
                 break;
         }
