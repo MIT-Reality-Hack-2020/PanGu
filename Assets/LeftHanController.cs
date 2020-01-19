@@ -45,7 +45,7 @@ public class LeftHanController : MonoBehaviour
                 fistSource.loop = true;
             }
 
-            Debug.Log("1");
+            //Debug.Log("1");
             checkfist = true;
             //cube.SetActive(true);
         }
