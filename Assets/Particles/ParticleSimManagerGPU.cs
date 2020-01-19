@@ -30,7 +30,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private ComputeBuffer drawArgs;
     private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
     
-    private NativeList<GPUParticle> particleList;
+    //private NativeList<GPUParticle> particleList;
 
     private ComputeBuffer particleBufferA;
     //private bool pingPong;
@@ -115,7 +115,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         public void Execute(int i) {
             //var parallelHashMap = particleSpatialHashMap.AsParallelWriter();
-            int hash = (int)math.hash(new int3(math.floor((particles[i].position/* - boundsSize*/) / cellSize)));
+            int hash = (int)math.hash(new int3(math.floor((particles[i].position /* - boundsSize*/) / cellSize)));
             particleSpatialHashMapWriter.Add(hash, i);
         }
     }
@@ -157,17 +157,21 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
     private void Update() {
         // copy particles back from GPU -- slow, but not enough time to implement every part of non-brute-force SPH on GPU
+        /*
         particleList = new NativeList<GPUParticle>((int)particleCount, Allocator.TempJob);
         var particleManaged = new GPUParticle[particleCount];
         particleBufferA.GetData(particleManaged, 0, 0, (int)particleCount);
         for (int i = 0; i < particleCount; i++) {
             particleList.Add(particleManaged[i]);
         }
+        particleManaged = null;
+        */
         
         // loop over particles and make pending deletions, etc
         // TODO
         
         // construct spatial acceleration structure
+        /*
         var particleSpatialHashMap = new NativeMultiHashMap<int, int>(particleList.Length, Allocator.TempJob);
         var neighborInfoNativeArray = new NativeArray<NeighborInfo>(particleList.Length, Allocator.TempJob);
         var neighborListNativeArray = new NativeArray<int>(particleList.Length * 32, Allocator.TempJob);
@@ -190,6 +194,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         var populateNeighborListArraysHandle = populateNeighborListArraysJob.Schedule(particleList.Length, 64, updateSpatialHashMapHandle);
         
         populateNeighborListArraysHandle.Complete();
+        updateSpatialHashMapHandle.Complete();
         particleSpatialHashMap.Dispose();
 
         neighborInfoBuffer.SetData(neighborInfoNativeArray);
@@ -198,6 +203,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         neighborInfoNativeArray.Dispose();
         neighborListNativeArray.Dispose();
         particleList.Dispose();
+        */
 
         particleSimShader.SetBuffer(verletIndex, "neighborInfo", neighborInfoBuffer);
         particleSimShader.SetBuffer(densityPressureIndex, "neighborInfo", neighborInfoBuffer);

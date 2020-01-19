@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="de6515c0-58f0-48f9-8e85-f2d89c4f1741" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Particles/ParticleSim.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Particles/ParticleSim.compute" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Particles/ParticleSimManagerGPU.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Particles/ParticleSimManagerGPU.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Hand Particle Integration Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Hand Particle Integration Test.unity" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,6 +21,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Particles/ParticleSimManagerGPU.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.mathematics@1.1.0/Unity.Mathematics/random.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Oculus/VR/Scripts/OVRManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scenes/Hand Particle Integration Test.unity" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/HandController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Particles/ParticleSimManager.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Particles/InstancedParticleMesh.shader" root0="FORCE_HIGHLIGHTING" />

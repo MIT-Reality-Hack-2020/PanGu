@@ -82,8 +82,9 @@ void DensityPressure(uint id : SV_DispatchThreadID)
     float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
-    for (uint j = 0; j < neighborInfo[id].count; j++) {
-        uint i = neighborLists[neighborInfo[id].startIndex + j];
+    //for (uint j = 0; j < neighborInfo[id].count; j++) {
+    //    uint i = neighborLists[neighborInfo[id].startIndex + j];
+    for (uint i = 0; i < particleCount; i++) {
         float3 delta = thisParticle.position - particles[i].position;
         float distance = length(delta);
         if (distance < smoothingLength) {
@@ -128,8 +129,9 @@ void Force(uint id : SV_DispatchThreadID)
     float3 pressureForce = float3(0,0,0);
     float3 viscosityForce = float3(0,0,0);
 
-    for (uint j = 0; j < neighborInfo[id].count; j++) {
-        uint i = neighborLists[neighborInfo[id].startIndex + j];
+    //for (uint j = 0; j < neighborInfo[id].count; j++) {
+    //    uint i = neighborLists[neighborInfo[id].startIndex + j];
+    for (uint i = 0; i < particleCount; i++) {
         if (id == i) continue;
         float3 delta = thisParticle.position - particles[i].position;
         float distance = length(delta);
