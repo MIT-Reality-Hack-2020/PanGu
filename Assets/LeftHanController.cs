@@ -47,7 +47,7 @@ public class LeftHanController : MonoBehaviour
 
             Debug.Log("1");
             checkfist = true;
-            cube.SetActive(true);
+            //cube.SetActive(true);
         }
         else
         {
@@ -55,7 +55,7 @@ public class LeftHanController : MonoBehaviour
             fistSource.Stop();
             fistSource.loop = false;
             
-            cube.SetActive(false);
+            //cube.SetActive(false);
         }
 
 

@@ -116,20 +116,23 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                         otherParticle.type = 1;
                         otherParticle.remainingLifetime = 1.0;
                     //} 
+                    particles[i] = otherParticle;
                 }
                 
                 if (otherParticle.type == 0) {
                     //thisParticle.type = 0;
                     thisParticle.remainingLifetime -= 0.5;
                     otherParticle.velocity *= 1.5;
+                    particles[i] = otherParticle;
                 } 
             }
             
             if (thisParticle.type == 2/* && distance < interactionLength*/) {
                 if (otherParticle.type == 0) {
                     //particles[i].type = 2;
-                    otherParticle.remainingLifetime -= 5.0;
+                    otherParticle.remainingLifetime = -5.0;
                     thisParticle.remainingLifetime += 0.25;
+                    particles[i] = otherParticle;
                 }
             }
             
@@ -139,8 +142,6 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                     thisParticle.remainingLifetime += 3.0;
                 }
             }
-            
-            particles[i] = otherParticle;
         }
     }
     

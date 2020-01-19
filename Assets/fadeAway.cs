@@ -23,7 +23,7 @@ public class fadeAway : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(lifeSpan);
+        //Debug.Log(lifeSpan);
 
         lifeSpan += Time.deltaTime;
 

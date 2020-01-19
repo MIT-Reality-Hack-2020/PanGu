@@ -36,8 +36,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private ComputeBuffer particleAppendBuffer;
     //private bool pingPong;
 
-    private ComputeBuffer neighborInfoBuffer;
-    private ComputeBuffer neighborListBuffer;
+    //private ComputeBuffer neighborInfoBuffer;
+    //private ComputeBuffer neighborListBuffer;
     
     private int          verletIndex;
     private int densityPressureIndex;
@@ -72,8 +72,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         particleBufferA = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16);
         particleAppendBuffer = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16, ComputeBufferType.Append);
-        neighborInfoBuffer = new ComputeBuffer(64 * 64* 64, sizeof(int) * 2);
-        neighborListBuffer = new ComputeBuffer(64 * 64 * 64 * 32, sizeof(int));
+        //neighborInfoBuffer = new ComputeBuffer(64 * 64* 64, sizeof(int) * 2);
+        //neighborListBuffer = new ComputeBuffer(64 * 64 * 64 * 32, sizeof(int));
         
                  verletIndex = particleSimShader.FindKernel("Verlet");
         densityPressureIndex = particleSimShader.FindKernel("DensityPressure");
@@ -215,12 +215,12 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         */
 
         //particleSimShader.SetBuffer(verletIndex, "neighborInfo", neighborInfoBuffer);
-        particleSimShader.SetBuffer(densityPressureIndex, "neighborInfo", neighborInfoBuffer);
-        particleSimShader.SetBuffer(forceIndex, "neighborInfo", neighborInfoBuffer);
+        //particleSimShader.SetBuffer(densityPressureIndex, "neighborInfo", neighborInfoBuffer);
+        //particleSimShader.SetBuffer(forceIndex, "neighborInfo", neighborInfoBuffer);
         
         //particleSimShader.SetBuffer(verletIndex, "neighborLists", neighborListBuffer);
-        particleSimShader.SetBuffer(densityPressureIndex, "neighborLists", neighborListBuffer);
-        particleSimShader.SetBuffer(forceIndex, "neighborLists", neighborListBuffer);
+        //particleSimShader.SetBuffer(densityPressureIndex, "neighborLists", neighborListBuffer);
+        //particleSimShader.SetBuffer(forceIndex, "neighborLists", neighborListBuffer);
         
         //Debug.Log($"{particleCount}");
         particleSimShader.SetInt("particleCount", (int)particleCount);
@@ -270,6 +270,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private void OnDestroy() {
         particleBufferA.Release();
         particleAppendBuffer.Release();
+        drawArgs.Release();
     }
 
     private void LateUpdate() {
@@ -304,7 +305,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetVector(positionString, spawnPointPosition);
         particleSimShader.SetFloat(strengthString, handTrigger);
         
-        //Debug.Log(gesture);
+        Debug.Log(gesture);
         
         switch (gesture) {
             case HandController.Gesture.None:
