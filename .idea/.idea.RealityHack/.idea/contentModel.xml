@@ -749,6 +749,272 @@
           <e p="ParticleSimManager.cs" t="Include" />
           <e p="ParticleSimManagerGPU.cs" t="Include" />
         </e>
+        <e p="ThirdParty" t="Include">
+          <e p="Noise" t="Include">
+            <e p="Shaders" t="Include">
+              <e p="Noise.cginc" t="Include" />
+            </e>
+          </e>
+          <e p="Reaktion" t="Include">
+            <e p="Editor" t="Include">
+              <e p="Gear" t="Include">
+                <e p="AnimatorGearEditor.cs" t="Include" />
+                <e p="CameraGearEditor.cs" t="Include" />
+                <e p="ConstantMotionGearEditor.cs" t="Include" />
+                <e p="GenericCurveGearEditor.cs" t="Include" />
+                <e p="GenericGradientGearEditor.cs" t="Include" />
+                <e p="GenericTriggerGearEditor.cs" t="Include" />
+                <e p="GlobalSettingGearEditor.cs" t="Include" />
+                <e p="JitterMotionGearEditor.cs" t="Include" />
+                <e p="LightGearEditor.cs" t="Include" />
+                <e p="MaterialGearEditor.cs" t="Include" />
+                <e p="ParticleSystemGearEditor.cs" t="Include" />
+                <e p="SpawnerGearEditor.cs" t="Include" />
+                <e p="TransformGearEditor.cs" t="Include" />
+              </e>
+              <e p="Injector" t="Include">
+                <e p="AudioInjectorEditor.cs" t="Include" />
+              </e>
+              <e p="Internal" t="Include">
+                <e p="GenericLinkDrawer.cs" t="Include" />
+                <e p="ModifierDrawer.cs" t="Include" />
+                <e p="RemoteDrawer.cs" t="Include" />
+                <e p="TriggerDrawer.cs" t="Include" />
+              </e>
+              <e p="Reaktor" t="Include">
+                <e p="ReaktorEditor.cs" t="Include" />
+              </e>
+              <e p="TiltBrushToolkitThirdPartyEditor.asmdef" t="Include" />
+              <e p="Utility" t="Include">
+                <e p="BandPassFilterEditor.cs" t="Include" />
+                <e p="ConstantMotionEditor.cs" t="Include" />
+                <e p="GenericAudioInputEditor.cs" t="Include" />
+                <e p="JitterMotionEditor.cs" t="Include" />
+                <e p="ObjectParticleSystem.cs" t="Include" />
+                <e p="PlanterEditor.cs" t="Include" />
+                <e p="ReaktionWindow.cs" t="Include" />
+                <e p="SelfDestructionEditor.cs" t="Include" />
+                <e p="SpawnerEditor.cs" t="Include" />
+                <e p="TurbulentMotionEditor.cs" t="Include" />
+                <e p="VariableMotionEditor.cs" t="Include" />
+              </e>
+            </e>
+            <e p="Gear" t="Include">
+              <e p="AnimatorGear.cs" t="Include" />
+              <e p="CameraGear.cs" t="Include" />
+              <e p="ConstantMotionGear.cs" t="Include" />
+              <e p="GenericCurveGear.cs" t="Include" />
+              <e p="GenericGradientGear.cs" t="Include" />
+              <e p="GenericTriggerGear.cs" t="Include" />
+              <e p="GlobalSettingGear.cs" t="Include" />
+              <e p="JitterMotionGear.cs" t="Include" />
+              <e p="LightGear.cs" t="Include" />
+              <e p="MaterialGear.cs" t="Include" />
+              <e p="ParticleSystemGear.cs" t="Include" />
+              <e p="SpawnerGear.cs" t="Include" />
+              <e p="TransformGear.cs" t="Include" />
+            </e>
+            <e p="Injector" t="Include">
+              <e p="AudioInjector.cs" t="Include" />
+              <e p="SystemAudioInjector.cs" t="Include" />
+            </e>
+            <e p="Internal" t="Include">
+              <e p="GenericLink.cs" t="Include" />
+              <e p="InjectorBase.cs" t="Include" />
+              <e p="InjectorLink.cs" t="Include" />
+              <e p="Modifier.cs" t="Include" />
+              <e p="Perlin.cs" t="Include" />
+              <e p="ReaktorLink.cs" t="Include" />
+              <e p="Remote.cs" t="Include" />
+              <e p="Trigger.cs" t="Include" />
+            </e>
+            <e p="Reaktor" t="Include">
+              <e p="Reaktor.cs" t="Include" />
+            </e>
+            <e p="Utility" t="Include">
+              <e p="BandPassFilter.cs" t="Include" />
+              <e p="ConstantMotion.cs" t="Include" />
+              <e p="GenericAudioInput.cs" t="Include" />
+              <e p="JitterMotion.cs" t="Include" />
+              <e p="ObjectParticleSystem.cs" t="Include" />
+              <e p="Planter.cs" t="Include" />
+              <e p="SelfDestruction.cs" t="Include" />
+              <e p="Spawner.cs" t="Include" />
+              <e p="TurbulentMotion.cs" t="Include" />
+              <e p="VariableMotion.cs" t="Include" />
+            </e>
+          </e>
+          <e p="TiltBrushToolkitThirdParty.asmdef" t="Include" />
+        </e>
+        <e p="TiltBrush" t="Include">
+          <e p="Assets" t="Include">
+            <e p="Brushes" t="Include">
+              <e p="Basic" t="Include">
+                <e p="Bubbles" t="Include">
+                  <e p="Bubbles.shader" t="Include" />
+                </e>
+                <e p="CelVinyl" t="Include">
+                  <e p="CelVinyl.shader" t="Include" />
+                </e>
+                <e p="ChromaticWave" t="Include">
+                  <e p="ChromaticWave.shader" t="Include" />
+                </e>
+                <e p="Comet" t="Include">
+                  <e p="Comet.shader" t="Include" />
+                </e>
+                <e p="DiamondHull" t="Include">
+                  <e p="DiamondHull.shader" t="Include" />
+                </e>
+                <e p="Disco" t="Include">
+                  <e p="Disco.shader" t="Include" />
+                </e>
+                <e p="Dots" t="Include">
+                  <e p="Dots.shader" t="Include" />
+                </e>
+                <e p="DoubleTaperedFlat" t="Include">
+                  <e p="DiffuseNoTextureDoubleSided.shader" t="Include" />
+                </e>
+                <e p="DoubleTaperedMarker" t="Include">
+                  <e p="DoubleTaperedMarker.shader" t="Include" />
+                </e>
+                <e p="Electricity" t="Include">
+                  <e p="Electricity.shader" t="Include" />
+                </e>
+                <e p="Embers" t="Include">
+                  <e p="Embers.shader" t="Include" />
+                </e>
+                <e p="Fire" t="Include">
+                  <e p="Fire.shader" t="Include" />
+                </e>
+                <e p="Highlighter" t="Include">
+                  <e p="AdditiveCutout.shader" t="Include" />
+                </e>
+                <e p="Hypercolor" t="Include">
+                  <e p="HypercolorDoubleSided.shader" t="Include" />
+                  <e p="HypercolorSingleSided.shader" t="Include" />
+                </e>
+                <e p="HyperGrid" t="Include">
+                  <e p="HyperGrid.shader" t="Include" />
+                </e>
+                <e p="LightWire" t="Include">
+                  <e p="LightWire.shader" t="Include" />
+                </e>
+                <e p="Petal" t="Include">
+                  <e p="Petal.shader" t="Include" />
+                </e>
+                <e p="Plasma" t="Include">
+                  <e p="Plasma.shader" t="Include" />
+                </e>
+                <e p="Rainbow" t="Include">
+                  <e p="Rainbow.shader" t="Include" />
+                </e>
+                <e p="Smoke" t="Include">
+                  <e p="Smoke.shader" t="Include" />
+                </e>
+                <e p="Snow" t="Include">
+                  <e p="Snow.shader" t="Include" />
+                </e>
+                <e p="SoftHighlighter" t="Include">
+                  <e p="SoftHighlighter.shader" t="Include" />
+                </e>
+                <e p="Stars" t="Include">
+                  <e p="Stars.shader" t="Include" />
+                </e>
+                <e p="Streamers" t="Include">
+                  <e p="Streamers.shader" t="Include" />
+                </e>
+                <e p="Toon" t="Include">
+                  <e p="Toon.shader" t="Include" />
+                </e>
+                <e p="VelvetInk" t="Include">
+                  <e p="VelvetInk.shader" t="Include" />
+                </e>
+                <e p="Waveform" t="Include">
+                  <e p="Waveform.shader" t="Include" />
+                </e>
+                <e p="WaveformPulse" t="Include">
+                  <e p="NeonPulse.shader" t="Include" />
+                </e>
+                <e p="WigglyGraphite" t="Include">
+                  <e p="WigglyGraphiteDoubleSided.shader" t="Include" />
+                </e>
+              </e>
+              <e p="Blocks" t="Include">
+                <e p="BlocksGem" t="Include">
+                  <e p="BlocksGem.shader" t="Include" />
+                </e>
+                <e p="BlocksGlass" t="Include">
+                  <e p="BlocksGlass.shader" t="Include" />
+                </e>
+                <e p="BlocksPaper" t="Include">
+                  <e p="BlocksPaper.shader" t="Include" />
+                </e>
+              </e>
+              <e p="Shared" t="Include">
+                <e p="Shaders" t="Include">
+                  <e p="Bloom.shader" t="Include" />
+                  <e p="DiffuseDoubleSided.shader" t="Include" />
+                  <e p="DiffuseOpaqueDoubleSided.shader" t="Include" />
+                  <e p="DiffuseOpaqueSingleSided.shader" t="Include" />
+                  <e p="DiffuseSingleSided.shader" t="Include" />
+                  <e p="StandardDoubleSided.shader" t="Include" />
+                  <e p="StandardSingleSided.shader" t="Include" />
+                  <e p="Unlit.shader" t="Include" />
+                </e>
+              </e>
+            </e>
+            <e p="Shaders" t="Include">
+              <e p="Include" t="Include">
+                <e p="Brush.cginc" t="Include" />
+                <e p="Particles.cginc" t="Include" />
+              </e>
+              <e p="Unlit-Diffuse.shader" t="Include" />
+            </e>
+          </e>
+          <e p="Materials" t="Include">
+            <e p="PbrBlendDoubleSided.shader" t="Include" />
+            <e p="PbrBlendSingleSided.shader" t="Include" />
+            <e p="PbrOpaqueDoubleSided.shader" t="Include" />
+            <e p="PbrOpaqueSingleSided.shader" t="Include" />
+          </e>
+          <e p="Scripts" t="Include">
+            <e p="AxisConvention.cs" t="Include" />
+            <e p="BrushDescriptor.cs" t="Include" />
+            <e p="BrushManifest.cs" t="Include" />
+            <e p="Editor" t="Include">
+              <e p="EditorUtils.cs" t="Include" />
+              <e p="FbxUtils.cs" t="Include" />
+              <e p="GammaSettings.cs" t="Include" />
+              <e p="Glb1Importer.cs" t="Include" />
+              <e p="Glb2Importer.cs" t="Include" />
+              <e p="ModelImportSettings.cs" t="Include" />
+              <e p="ParticleMesh.cs" t="Include" />
+              <e p="TiltBrushToolkitEditor.asmdef" t="Include" />
+              <e p="VisualizerManagerEditor.cs" t="Include" />
+            </e>
+            <e p="Gltf" t="Include">
+              <e p="GlbParser.cs" t="Include" />
+              <e p="Gltf1Schema.cs" t="Include" />
+              <e p="Gltf2Schema.cs" t="Include" />
+              <e p="GltfMaterialConverter.cs" t="Include" />
+              <e p="GltfSchemaCommon.cs" t="Include" />
+              <e p="ImportGltf.cs" t="Include" />
+              <e p="IntRange.cs" t="Include" />
+              <e p="IUriLoader.cs" t="Include" />
+              <e p="MathUtils.cs" t="Include" />
+              <e p="PolyImportOptions.cs" t="Include" />
+              <e p="TemporaryPolyToolkitStubs.cs" t="Include" />
+            </e>
+            <e p="SerializableGuid.cs" t="Include" />
+            <e p="SubStream.cs" t="Include" />
+            <e p="TbtSettings.cs" t="Include" />
+            <e p="TiltBrushToolkitRuntime.asmdef" t="Include" />
+            <e p="Version.cs" t="Include" />
+            <e p="VisualizerAudioInput.cs" t="Include" />
+            <e p="VisualizerManager.cs" t="Include" />
+          </e>
+          <e p="VERSION.txt" t="Include" />
+        </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />
       <e p="Oculus.VR.csproj" t="IncludeRecursive" />
@@ -757,6 +1023,10 @@
       <e p="Packages" t="ExcludeRecursive" />
       <e p="RealityHack.sln" t="IncludeFlat" />
       <e p="Temp\bin" t="ExcludeRecursive" />
+      <e p="TiltBrushToolkitEditor.csproj" t="IncludeRecursive" />
+      <e p="TiltBrushToolkitRuntime.csproj" t="IncludeRecursive" />
+      <e p="TiltBrushToolkitThirdParty.csproj" t="IncludeRecursive" />
+      <e p="TiltBrushToolkitThirdPartyEditor.csproj" t="IncludeRecursive" />
     </e>
   </component>
 </project>

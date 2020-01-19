@@ -2,6 +2,8 @@
 #pragma kernel DensityPressure
 #pragma kernel Force
 #pragma kernel HandInput
+#pragma kernel PickNewParticles
+#pragma kernel CopyAppendToRW
 
 struct GPUParticle {
      float3 position;
@@ -26,7 +28,9 @@ struct NeighborsInfo {
 //RWStructuredBuffer<GPUParticle> nextParticles;
   StructuredBuffer<NeighborsInfo> neighborInfo;
   StructuredBuffer<int> neighborLists;
+  StructuredBuffer<GPUParticle> lastParticles;
 RWStructuredBuffer<GPUParticle> particles;
+AppendStructuredBuffer<GPUParticle> nextParticles;
 
 int particleCount;
 
@@ -163,6 +167,9 @@ void Force(uint id : SV_DispatchThreadID) {
 
 [numthreads(128,1,1)]
 void HandInput(uint id : SV_DispatchThreadID) {
+    if (id > particleCount)
+        return;
+
     GPUParticle thisParticle = particles[id];
 
     // mode enum: 0 = none, 1 = fist, 2 = point (water), 3 = point (fire), 4 = point (wood)
@@ -195,5 +202,30 @@ void HandInput(uint id : SV_DispatchThreadID) {
         }
     }
     
+    particles[id] = thisParticle;
+}
+
+[numthreads(128,1,1)]
+void PickNewParticles(uint id : SV_DispatchThreadID) {
+    if (id > particleCount)
+        return;
+        
+    GPUParticle thisParticle = particles[id];
+    
+    if (particles[id].type == 1) {
+        thisParticle.remainingLifetime -= timeStep;
+    }
+
+    if (particles[id].remainingLifetime > 0.0) {
+        nextParticles.Append(thisParticle);
+    }
+}
+
+[numthreads(128,1,1)]
+void CopyAppendToRW(uint id : SV_DispatchThreadID) {
+    if (id > particleCount)
+        return;
+        
+    GPUParticle thisParticle = lastParticles[id];
     particles[id] = thisParticle;
 }

@@ -33,6 +33,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     //private NativeList<GPUParticle> particleList;
 
     private ComputeBuffer particleBufferA;
+    private ComputeBuffer particleAppendBuffer;
     //private bool pingPong;
 
     private ComputeBuffer neighborInfoBuffer;
@@ -42,6 +43,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private int densityPressureIndex;
     private int           forceIndex;
     private int       handInputIndex;
+    private int        pickNextIndex;
+    private int            copyIndex;
     
     struct GPUParticle {
         public float3 position;
@@ -68,6 +71,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         instance = this;
         
         particleBufferA = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16);
+        particleAppendBuffer = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16, ComputeBufferType.Append);
         neighborInfoBuffer = new ComputeBuffer(64 * 64* 64, sizeof(int) * 2);
         neighborListBuffer = new ComputeBuffer(64 * 64 * 64 * 32, sizeof(int));
         
@@ -75,7 +79,9 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         densityPressureIndex = particleSimShader.FindKernel("DensityPressure");
                   forceIndex = particleSimShader.FindKernel("Force"); 
               handInputIndex = particleSimShader.FindKernel("HandInput");
-                  
+               pickNextIndex = particleSimShader.FindKernel("PickNewParticles");
+                   copyIndex = particleSimShader.FindKernel("CopyAppendToRW");
+              
         drawArgs = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         args[0] = particleMesh.GetIndexCount(0);
         args[2] = particleMesh.GetIndexStart(0);
@@ -99,6 +105,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
             //initialParticles[i].velocity = rand.NextFloat3(new float3(-1f, -1f, -1f), new float3(1f, 1f, 1f));
             initialParticles[i].density = particleRestingDensity;
             initialParticles[i].pressure = 1f;
+            initialParticles[i].remainingLifetime = 1f;
             //Debug.Log($"{initialParticles[i].position} {initialParticles[i].velocity}");
         }
         
@@ -240,6 +247,24 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.Dispatch(forceIndex,           Mathf.CeilToInt(particleCount / 128f), 1, 1);
         particleSimShader.Dispatch(handInputIndex,       Mathf.CeilToInt(particleCount / 128f), 1, 1);
         particleSimShader.Dispatch(verletIndex,          Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        
+        particleSimShader.SetBuffer(pickNextIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(pickNextIndex, "nextParticles", particleAppendBuffer);
+        
+        particleSimShader.Dispatch(pickNextIndex,        Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        
+        ComputeBuffer countBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.IndirectArguments);
+        ComputeBuffer.CopyCount(particleAppendBuffer, countBuffer, 0);
+
+        int[] counter = new int[1] { 0 };
+        countBuffer.GetData(counter);
+        countBuffer.Dispose();
+        particleCount = (uint)counter[0];
+
+        particleSimShader.SetBuffer(copyIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(copyIndex, "lastParticles", particleAppendBuffer);
+        
+        particleSimShader.Dispatch(copyIndex,            Mathf.CeilToInt(particleCount / 128f), 1, 1);
     }
 
     private void OnDestroy() {
@@ -247,6 +272,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     }
 
     private void LateUpdate() {
+        particleAppendBuffer.SetCounterValue(0);
+        
         args[1] = particleCount;
         drawArgs.SetData(args);
         
@@ -262,7 +289,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     }
 
     public void SpawnParticle(float3 position, float3 velocity, HandController.Element element) {
-        GPUParticle newParticle = new GPUParticle {position = position, velocity = velocity, type = (uint)element};
+        GPUParticle newParticle = new GPUParticle {position = position, velocity = velocity, type = (uint)element, remainingLifetime = 1f};
         particleBufferA.SetData(new[] { newParticle }, 0, (int)particleCount - 1, 1);
         particleCount++;
     }
@@ -276,7 +303,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetVector(positionString, spawnPointPosition);
         particleSimShader.SetFloat(strengthString, handTrigger);
         
-        Debug.Log(gesture);
+        //Debug.Log(gesture);
         
         switch (gesture) {
             case HandController.Gesture.None:
