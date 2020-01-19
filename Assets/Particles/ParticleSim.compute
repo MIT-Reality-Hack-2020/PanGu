@@ -1,6 +1,7 @@
 ﻿#pragma kernel Verlet
 #pragma kernel DensityPressure
 #pragma kernel Force
+#pragma kernel HandInput
 
 struct GPUParticle {
      float3 position;
@@ -45,9 +46,15 @@ float interactionLength;
 float timeStep = 0.01666;
 float3 gravity = float3(0, -9.82, 0);
 
+float3 leftHandPosition;
+int    leftHandMode; 
+float  leftHandStrength;
+float3 rightHandPosition;
+int    rightHandMode;
+float  rightHandStrength;
+
 [numthreads(128,1,1)]
-void Verlet (uint id : SV_DispatchThreadID)
-{
+void Verlet (uint id : SV_DispatchThreadID) {
     if (id > particleCount)
         return;
 
@@ -73,8 +80,7 @@ void Verlet (uint id : SV_DispatchThreadID)
 }
 
 [numthreads(128,1,1)]
-void DensityPressure(uint id : SV_DispatchThreadID) 
-{
+void DensityPressure(uint id : SV_DispatchThreadID) {
     if (id > particleCount)
         return;
 
@@ -120,8 +126,7 @@ void DensityPressure(uint id : SV_DispatchThreadID)
 
 // TODO: could this be rolled into DensityPressure kernel? avoid calculating delta twice etc
 [numthreads(128,1,1)]
-void Force(uint id : SV_DispatchThreadID)
-{
+void Force(uint id : SV_DispatchThreadID) {
     if (id > particleCount)
         return;
 
@@ -154,4 +159,41 @@ void Force(uint id : SV_DispatchThreadID)
     float3 externalForce = gravity * thisParticle.density;
     
     particles[id].force = pressureForce + viscosityForce + externalForce;
+}
+
+[numthreads(128,1,1)]
+void HandInput(uint id : SV_DispatchThreadID) {
+    GPUParticle thisParticle = particles[id];
+
+    // mode enum: 0 = none, 1 = fist, 2 = point (water), 3 = point (fire), 4 = point (wood)
+    // type enum: 0 = water, 1 = fire, 2 = wood, 3 = earth, 4 = metal
+    float3 leftHandDelta = thisParticle.position - leftHandPosition;
+    float leftHandDist = length(leftHandDelta);
+    if (leftHandMode == 1) {
+        thisParticle.force -= (leftHandDelta * 5.0) / pow(leftHandDist, 2.0); // * thisParticle.density?
+    } else if (leftHandMode >= 2 && leftHandMode <= 6 && leftHandDist < leftHandStrength * 0.35f) {
+        if (leftHandMode == 2) {
+            thisParticle.type = 0;
+        } else if (leftHandMode == 3) {
+            thisParticle.type = 1;
+        } else if (leftHandMode == 4) {
+            thisParticle.type = 2;
+        }
+    }
+    
+    float3 rightHandDelta = thisParticle.position - rightHandPosition;
+    float rightHandDist = length(rightHandDelta);
+    if (rightHandMode == 1) {
+        thisParticle.force -= (rightHandDelta * 5.0) / pow(rightHandDist, 2.0); // * thisParticle.density?
+    } else if (rightHandMode >= 2 && rightHandMode <= 6 && rightHandDist < rightHandStrength * 0.35f) {
+        if (rightHandMode == 2) {
+            thisParticle.type = 0;
+        } else if (rightHandMode == 3) {
+            thisParticle.type = 1;
+        } else if (rightHandMode == 4) {
+            thisParticle.type = 2;
+        }
+    }
+    
+    particles[id] = thisParticle;
 }

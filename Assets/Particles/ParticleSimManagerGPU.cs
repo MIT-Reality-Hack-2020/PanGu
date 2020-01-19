@@ -41,6 +41,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private int          verletIndex;
     private int densityPressureIndex;
     private int           forceIndex;
+    private int       handInputIndex;
     
     struct GPUParticle {
         public float3 position;
@@ -72,7 +73,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
                  verletIndex = particleSimShader.FindKernel("Verlet");
         densityPressureIndex = particleSimShader.FindKernel("DensityPressure");
-                  forceIndex = particleSimShader.FindKernel("Force");
+                  forceIndex = particleSimShader.FindKernel("Force"); 
+              handInputIndex = particleSimShader.FindKernel("HandInput");
                   
         drawArgs = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         args[0] = particleMesh.GetIndexCount(0);
@@ -205,11 +207,11 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleList.Dispose();
         */
 
-        particleSimShader.SetBuffer(verletIndex, "neighborInfo", neighborInfoBuffer);
+        //particleSimShader.SetBuffer(verletIndex, "neighborInfo", neighborInfoBuffer);
         particleSimShader.SetBuffer(densityPressureIndex, "neighborInfo", neighborInfoBuffer);
         particleSimShader.SetBuffer(forceIndex, "neighborInfo", neighborInfoBuffer);
         
-        particleSimShader.SetBuffer(verletIndex, "neighborLists", neighborListBuffer);
+        //particleSimShader.SetBuffer(verletIndex, "neighborLists", neighborListBuffer);
         particleSimShader.SetBuffer(densityPressureIndex, "neighborLists", neighborListBuffer);
         particleSimShader.SetBuffer(forceIndex, "neighborLists", neighborListBuffer);
         
@@ -220,6 +222,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetBuffer(verletIndex, "particles", particleBufferA);
         particleSimShader.SetBuffer(densityPressureIndex, "particles", particleBufferA);
         particleSimShader.SetBuffer(forceIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(handInputIndex, "particles", particleBufferA);
         
         particleSimShader.SetFloat("pi", Mathf.PI);
         particleSimShader.SetFloat("particleMass", particleMass);
@@ -235,6 +238,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
         particleSimShader.Dispatch(forceIndex,           Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(handInputIndex,       Mathf.CeilToInt(particleCount / 128f), 1, 1);
         particleSimShader.Dispatch(verletIndex,          Mathf.CeilToInt(particleCount / 128f), 1, 1);
     }
 
@@ -261,5 +265,55 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         GPUParticle newParticle = new GPUParticle {position = position, velocity = velocity, type = (uint)element};
         particleBufferA.SetData(new[] { newParticle }, 0, (int)particleCount - 1, 1);
         particleCount++;
+    }
+
+    public void SetHandState(HandController.Hand hand, HandController.Gesture gesture, Vector3 spawnPointPosition, Vector3 transformForward, float handTrigger, HandController.Element currentElement) {
+        bool leftHand = hand == HandController.Hand.Left;
+        string positionString = leftHand ? "leftHandPosition" : "rightHandPosition";
+        string     modeString = leftHand ? "leftHandMode"     : "rightHandMode";
+        string strengthString = leftHand ? "leftHandStrength" : "rightHandMode";
+        
+        particleSimShader.SetVector(positionString, spawnPointPosition);
+        particleSimShader.SetFloat(strengthString, handTrigger);
+        
+        Debug.Log(gesture);
+        
+        switch (gesture) {
+            case HandController.Gesture.None:
+                particleSimShader.SetInt(modeString, 0);
+                break;
+            case HandController.Gesture.Fist:
+                particleSimShader.SetInt(modeString, 1);
+                break;
+            case HandController.Gesture.Handgun:
+                particleSimShader.SetInt(modeString, 0);
+                for (int i = 0; i < Mathf.CeilToInt((handTrigger - 0.25f) * 10f); i++) {
+                    float randomForce = UnityEngine.Random.Range(-3f, 3f);
+                    Vector3 randomPosition = new Vector3(
+                        UnityEngine.Random.Range(-.1f, .1f),
+                        UnityEngine.Random.Range(-.1f, .1f),
+                        UnityEngine.Random.Range(-.1f, .1f)
+                    );
+                    SpawnParticle(spawnPointPosition + randomPosition, (randomForce + 10f) * (handTrigger - 0.25f) * transformForward, currentElement);
+                }
+                break;
+            case HandController.Gesture.Pinch:
+                // TODO
+                particleSimShader.SetInt(modeString, 0);
+                break;
+            case HandController.Gesture.Point:
+                switch (currentElement) {
+                    case HandController.Element.Water:
+                        particleSimShader.SetInt(modeString, 2);
+                        break;
+                    case HandController.Element.Fire:
+                        particleSimShader.SetInt(modeString, 3);
+                        break;
+                    case HandController.Element.Wood:
+                        particleSimShader.SetInt(modeString, 4);
+                        break;
+                }
+                break;
+        }
     }
 }
