@@ -72,6 +72,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         particleBufferA = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16);
         particleAppendBuffer = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16, ComputeBufferType.Append);
+        particleAppendBuffer.SetCounterValue(0);
         //neighborInfoBuffer = new ComputeBuffer(64 * 64* 64, sizeof(int) * 2);
         //neighborListBuffer = new ComputeBuffer(64 * 64 * 64 * 32, sizeof(int));
         
