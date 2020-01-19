@@ -3,16 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="de6515c0-58f0-48f9-8e85-f2d89c4f1741" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.RealityHack/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/LeftHanController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/LeftHanController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/HandController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/HandController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Particles/Instanced_InstancedSurfaceShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Particles/Instanced_InstancedSurfaceShader.mat" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Particles/ParticleSim.compute" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Particles/ParticleSim.compute" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Particles/ParticleSimManagerGPU.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Particles/ParticleSimManagerGPU.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RightHanController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/RightHanController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Hand Particle Integration Test.unity" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Hand Particle Integration Test.unity.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/fadeAway.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/fadeAway.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Main.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Main.unity" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,12 +41,12 @@
         <option value="$PROJECT_DIR$/Assets/ParticleSimManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Particles/ParticleSimManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Particles/InstancedParticleMesh.shader" />
-        <option value="$PROJECT_DIR$/Assets/HandController.cs" />
         <option value="$PROJECT_DIR$/Assets/RightHanController.cs" />
         <option value="$PROJECT_DIR$/Assets/LeftHanController.cs" />
         <option value="$PROJECT_DIR$/Assets/fadeAway.cs" />
         <option value="$PROJECT_DIR$/Assets/Particles/ParticleSimManagerGPU.cs" />
         <option value="$PROJECT_DIR$/Assets/Particles/ParticleSim.compute" />
+        <option value="$PROJECT_DIR$/Assets/HandController.cs" />
       </list>
     </option>
   </component>

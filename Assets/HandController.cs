@@ -13,6 +13,9 @@ public class HandController : MonoBehaviour
         Water, Fire, Wood, Earth, Metal
     }
 
+    public Material[] elementMaterials;
+    public Renderer handMeshRenderer;
+
     public enum Gesture {
         None, Fist, Handgun, Pinch, Point
     }
@@ -35,19 +38,24 @@ public class HandController : MonoBehaviour
         switch (currentElement) {
             case Element.Water:
                 currentElement = Element.Earth;
+                handMeshRenderer.sharedMaterial = elementMaterials[(int)Element.Earth];
                 break;
             case Element.Earth:
                 currentElement = Element.Wood;
+                handMeshRenderer.sharedMaterial = elementMaterials[(int)Element.Wood];
                 break;
             case Element.Wood:
                 //currentElement = Element.Metal;
                 currentElement = Element.Fire;
+                handMeshRenderer.sharedMaterial = elementMaterials[(int)Element.Fire];
                 break;
             case Element.Fire:
-                currentElement = Element.Water;
+                currentElement = Element.Metal;
+                handMeshRenderer.sharedMaterial = elementMaterials[(int)Element.Metal];
                 break;
             case Element.Metal:
                 currentElement = Element.Water;
+                handMeshRenderer.sharedMaterial = elementMaterials[(int)Element.Water];
                 break;
         }
     }

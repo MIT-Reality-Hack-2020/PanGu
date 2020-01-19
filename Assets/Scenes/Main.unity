@@ -254,6 +254,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d2e5e81cb0dfa41a875e3c5f34088e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  elementMaterials: []
+  handMeshRenderer: {fileID: 0}
   hand: 0
   spawnPoint: {fileID: 523660719}
   currentElement: 0
@@ -950,8 +952,8 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 1
+  m_Intensity: 1.75
+  m_Range: 1.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1170,6 +1172,12 @@ Transform:
   m_Father: {fileID: 41362908}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!137 &344541900 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 137977633181334670, guid: e6ba3498ffa1e534b91a07264266e6b8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1763377407}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &449199279
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,7 +1518,7 @@ MonoBehaviour:
   particleRestingDensity: 2
   particleViscosity: 2
   smoothingLength: 0.054
-  interactionLength: 0.044
+  interactionLength: 0.085
   timeStep: 0.01666667
   gravity:
     x: 0
@@ -1535,6 +1543,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d2e5e81cb0dfa41a875e3c5f34088e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  elementMaterials: []
+  handMeshRenderer: {fileID: 0}
   hand: 1
   spawnPoint: {fileID: 1251500399}
   currentElement: 0
@@ -1659,6 +1669,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d2e5e81cb0dfa41a875e3c5f34088e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  elementMaterials:
+  - {fileID: 2100000, guid: b3e5115c9da5aab44b87d0348519b48d, type: 2}
+  - {fileID: 2100000, guid: b5aa0aa7e771cb3459f4be3ce01e9cb7, type: 2}
+  - {fileID: 2100000, guid: 811a168905a10574fbe95e6e01a71aed, type: 2}
+  - {fileID: 2100000, guid: ad8165801c70536459a1b241e8ee0e0c, type: 2}
+  - {fileID: 2100000, guid: 884e7dd3b79b01441a887d4ab2ca5102, type: 2}
+  handMeshRenderer: {fileID: 344541900}
   hand: 0
   spawnPoint: {fileID: 523660719}
   currentElement: 0
@@ -2492,6 +2509,12 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!137 &1462166514 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 137383442524578654, guid: ba1fa4a8c66106b4988c88fe4b8e8502,
+    type: 3}
+  m_PrefabInstance: {fileID: 1794282453}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1466209506 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 412370, guid: ba1fa4a8c66106b4988c88fe4b8e8502,
@@ -2879,8 +2902,8 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.5
-  m_Range: 1
+  m_Intensity: 1.75
+  m_Range: 1.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -3137,6 +3160,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d2e5e81cb0dfa41a875e3c5f34088e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  elementMaterials:
+  - {fileID: 2100000, guid: b3e5115c9da5aab44b87d0348519b48d, type: 2}
+  - {fileID: 2100000, guid: b5aa0aa7e771cb3459f4be3ce01e9cb7, type: 2}
+  - {fileID: 2100000, guid: 811a168905a10574fbe95e6e01a71aed, type: 2}
+  - {fileID: 2100000, guid: ad8165801c70536459a1b241e8ee0e0c, type: 2}
+  - {fileID: 2100000, guid: 884e7dd3b79b01441a887d4ab2ca5102, type: 2}
+  handMeshRenderer: {fileID: 1462166514}
   hand: 1
   spawnPoint: {fileID: 1251500399}
   currentElement: 0
@@ -3204,7 +3234,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: e57ca4cbec3126a468352fa1ecbad40e, type: 2}
+      objectReference: {fileID: 2100000, guid: b3e5115c9da5aab44b87d0348519b48d, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6ba3498ffa1e534b91a07264266e6b8, type: 3}
 --- !u!114 &1772421516
