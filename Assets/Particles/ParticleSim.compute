@@ -72,8 +72,10 @@ void Verlet (uint id : SV_DispatchThreadID) {
     
     if (thisParticle.type == 4) {
         velocity = float3(0,0,0);
-    } else if (thisParticle.type == 2 || thisParticle.type == 3) { 
+    } else if (thisParticle.type == 2) { 
         velocity *= 0.10;
+    } else if (thisParticle.type == 3) {
+        velocity *= 0.25;
     }
     
     float3 position = thisParticle.position + timeStep * velocity; 
@@ -198,14 +200,18 @@ void HandInput(uint id : SV_DispatchThreadID) {
 
     GPUParticle thisParticle = particles[id];
 
-    // mode enum: 0 = none, 1 = fist, 2 = point (water), 3 = point (fire), 4 = point (wood)
+    // mode enum: 0 = none, 1 = fist, 2 = pinch, 3 = point (water), 4 = point (fire), 5 = point (wood), 6 = point (earth), 7 = point (metal)
     // type enum: 0 = water, 1 = fire, 2 = wood, 3 = earth, 4 = metal, 5 = seed
     float3 leftHandDelta = thisParticle.position - leftHandPosition;
     float leftHandDist = length(leftHandDelta);
     if (leftHandMode == 1) {
         thisParticle.force -= (leftHandDelta * 5.0) / pow(leftHandDist, 2.0); // * thisParticle.density?
-    } else if (leftHandMode >= 2 && leftHandMode <= 6 && leftHandDist < leftHandStrength * 0.35f) {
-    /*
+    } else if (leftHandMode == 2 && leftHandDist < 0.15) {
+        thisParticle.remainingLifetime = -1.0;
+    }
+    
+    /* else if (leftHandMode >= 2 && leftHandMode <= 6 && leftHandDist < leftHandStrength * 0.35f) {
+    
         if (leftHandMode == 2) {
             thisParticle.type = 0;
         } else if (leftHandMode == 3) {
@@ -213,15 +219,20 @@ void HandInput(uint id : SV_DispatchThreadID) {
         } else if (leftHandMode == 4) {
             thisParticle.type = 2;
         }
-        */
-    }
+        
+    }*/
     
     float3 rightHandDelta = thisParticle.position - rightHandPosition;
     float rightHandDist = length(rightHandDelta);
     if (rightHandMode == 1) {
         thisParticle.force -= (rightHandDelta * 5.0) / pow(rightHandDist, 2.0); // * thisParticle.density?
-    } else if (rightHandMode >= 2 && rightHandMode <= 6 && rightHandDist < rightHandStrength * 0.35f) {
-    /*
+    } else if (rightHandMode == 2 && rightHandDist < 0.15) {
+        thisParticle.remainingLifetime = -1.0;
+    }
+    
+    
+    /*else if (rightHandMode >= 2 && rightHandMode <= 6 && rightHandDist < rightHandStrength * 0.35f) {
+    
         if (rightHandMode == 2) {
             thisParticle.type = 0;
         } else if (rightHandMode == 3) {
@@ -229,8 +240,8 @@ void HandInput(uint id : SV_DispatchThreadID) {
         } else if (rightHandMode == 4) {
             thisParticle.type = 2;
         }
-        */
-    }
+        
+    }*/
     
     particles[id] = thisParticle;
 }

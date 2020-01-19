@@ -335,9 +335,10 @@ public class ParticleSimManagerGPU : MonoBehaviour {
                 break;
             case HandController.Gesture.Pinch:
                 // TODO
-                particleSimShader.SetInt(modeString, 0);
+                particleSimShader.SetInt(modeString, 2);
                 break;
             case HandController.Gesture.Point:
+                /*
                 switch (currentElement) {
                     case HandController.Element.Water:
                         particleSimShader.SetInt(modeString, 2);
@@ -349,6 +350,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
                         particleSimShader.SetInt(modeString, 4);
                         break;
                 }
+                */
                 break;
         }
     }
