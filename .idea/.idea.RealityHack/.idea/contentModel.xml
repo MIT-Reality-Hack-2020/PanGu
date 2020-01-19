@@ -7,7 +7,10 @@
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
+        <e p="fadeAway.cs" t="Include" />
         <e p="HandController.cs" t="Include" />
+        <e p="LeftHanController.cs" t="Include" />
+        <e p="LeftHandPositionTracker.cs" t="Include" />
         <e p="Oculus" t="Include">
           <e p="AudioManager" t="Include">
             <e p="Scenes" t="Include">
@@ -749,6 +752,8 @@
           <e p="ParticleSimManager.cs" t="Include" />
           <e p="ParticleSimManagerGPU.cs" t="Include" />
         </e>
+        <e p="RightHanController.cs" t="Include" />
+        <e p="RightHandPositionTracker.cs" t="Include" />
         <e p="ThirdParty" t="Include">
           <e p="Noise" t="Include">
             <e p="Shaders" t="Include">
@@ -1015,6 +1020,7 @@
           </e>
           <e p="VERSION.txt" t="Include" />
         </e>
+        <e p="TouchOfGod.cs" t="Include" />
       </e>
       <e p="obj" t="ExcludeRecursive" />
       <e p="Oculus.VR.csproj" t="IncludeRecursive" />
