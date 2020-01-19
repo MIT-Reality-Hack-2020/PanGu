@@ -243,16 +243,18 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetFloat("timeStep", timeStep);
         particleSimShader.SetFloat("boundsSize", boundsSize);
         particleSimShader.SetVector("gravity", gravity);
+
+        float groupSizeX = 64f;
         
-        particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / 128f), 1, 1);
-        particleSimShader.Dispatch(forceIndex,           Mathf.CeilToInt(particleCount / 128f), 1, 1);
-        particleSimShader.Dispatch(handInputIndex,       Mathf.CeilToInt(particleCount / 128f), 1, 1);
-        particleSimShader.Dispatch(verletIndex,          Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
+        particleSimShader.Dispatch(forceIndex,           Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
+        particleSimShader.Dispatch(handInputIndex,       Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
+        particleSimShader.Dispatch(verletIndex,          Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
         
         particleSimShader.SetBuffer(pickNextIndex, "particles", particleBufferA);
         particleSimShader.SetBuffer(pickNextIndex, "nextParticles", particleAppendBuffer);
         
-        particleSimShader.Dispatch(pickNextIndex,        Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(pickNextIndex,        Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
         
         ComputeBuffer countBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.IndirectArguments);
         ComputeBuffer.CopyCount(particleAppendBuffer, countBuffer, 0);
@@ -266,7 +268,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetBuffer(copyIndex, "lastParticles", particleAppendBuffer);
         particleSimShader.SetInt("particleCount", (int)particleCount);
         
-        particleSimShader.Dispatch(copyIndex,            Mathf.CeilToInt(particleCount / 128f), 1, 1);
+        particleSimShader.Dispatch(copyIndex,            Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
     }
 
     private void OnDestroy() {

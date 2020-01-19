@@ -61,7 +61,7 @@ float rand (float n) {
     return frac(sin(n) * 43758.5453123);
 }
 
-[numthreads(128,1,1)]
+[numthreads(64,1,1)]
 void Verlet (uint id : SV_DispatchThreadID) {
     if (id >= particleCount)
         return;
@@ -70,9 +70,9 @@ void Verlet (uint id : SV_DispatchThreadID) {
     float3 acceleration = thisParticle.force / thisParticle.density;
     float3 velocity = thisParticle.velocity + timeStep * acceleration;// + timeStep * gravity;
     
-    if (thisParticle.type == 3 || thisParticle.type == 4) {
+    if (thisParticle.type == 4) {
         velocity = float3(0,0,0);
-    } else if (thisParticle.type == 2) { 
+    } else if (thisParticle.type == 2 || thisParticle.type == 3) { 
         velocity *= 0.10;
     }
     
@@ -90,7 +90,7 @@ void Verlet (uint id : SV_DispatchThreadID) {
     particles[id].position = position;
 }
 
-[numthreads(128,1,1)]
+[numthreads(64,1,1)]
 void DensityPressure(uint id : SV_DispatchThreadID) {
     if (id >= particleCount)
         return;
@@ -154,7 +154,7 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
 }
 
 // TODO: could this be rolled into DensityPressure kernel? avoid calculating delta twice etc
-[numthreads(128,1,1)]
+[numthreads(64,1,1)]
 void Force(uint id : SV_DispatchThreadID) {
     if (id >= particleCount)
         return;
@@ -191,7 +191,7 @@ void Force(uint id : SV_DispatchThreadID) {
     particles[id].force = pressureForce + viscosityForce + externalForce;
 }
 
-[numthreads(128,1,1)]
+[numthreads(64,1,1)]
 void HandInput(uint id : SV_DispatchThreadID) {
     if (id >= particleCount)
         return;
@@ -235,7 +235,7 @@ void HandInput(uint id : SV_DispatchThreadID) {
     particles[id] = thisParticle;
 }
 
-[numthreads(128,1,1)]
+[numthreads(64,1,1)]
 void PickNewParticles(uint id : SV_DispatchThreadID) {
     if (id >= particleCount)
         return;
@@ -266,7 +266,7 @@ void PickNewParticles(uint id : SV_DispatchThreadID) {
     }
 }
 
-[numthreads(128,1,1)]
+[numthreads(64,1,1)]
 void CopyAppendToRW(uint id : SV_DispatchThreadID) {
     if (id >= particleCount)
         return;
