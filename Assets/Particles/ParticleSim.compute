@@ -63,7 +63,7 @@ float rand (float n) {
 
 [numthreads(128,1,1)]
 void Verlet (uint id : SV_DispatchThreadID) {
-    if (id > particleCount)
+    if (id >= particleCount)
         return;
 
     GPUParticle thisParticle = particles[id]; 
@@ -92,7 +92,7 @@ void Verlet (uint id : SV_DispatchThreadID) {
 
 [numthreads(128,1,1)]
 void DensityPressure(uint id : SV_DispatchThreadID) {
-    if (id > particleCount)
+    if (id >= particleCount)
         return;
 
     GPUParticle thisParticle = particles[id];
@@ -107,7 +107,9 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
         float distance = length(delta);
         if (distance < smoothingLength) {
             densitySum += particleMass * 315.0 * pow(smoothingLength * smoothingLength - distance * distance, 3.0) / (64.0 * pi * pow(smoothingLength, 9.0));
-            
+        }
+        
+        if (distance < interactionLength) {
             // you'd think this would be a divergence madhouse but it's still much faster than CPU implementation
             if (thisParticle.type == 1/* && distance < interactionLength*/) {
                 if (otherParticle.type == 2) {
@@ -130,7 +132,8 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
             if (thisParticle.type == 2/* && distance < interactionLength*/) {
                 if (otherParticle.type == 0) {
                     //particles[i].type = 2;
-                    otherParticle.remainingLifetime = -5.0;
+                    //otherParticle.remainingLifetime = -5.0;
+                    otherParticle.type = 2;
                     thisParticle.remainingLifetime += 0.25;
                     particles[i] = otherParticle;
                 }
@@ -153,7 +156,7 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
 // TODO: could this be rolled into DensityPressure kernel? avoid calculating delta twice etc
 [numthreads(128,1,1)]
 void Force(uint id : SV_DispatchThreadID) {
-    if (id > particleCount)
+    if (id >= particleCount)
         return;
 
     GPUParticle thisParticle = particles[id];
@@ -190,7 +193,7 @@ void Force(uint id : SV_DispatchThreadID) {
 
 [numthreads(128,1,1)]
 void HandInput(uint id : SV_DispatchThreadID) {
-    if (id > particleCount)
+    if (id >= particleCount)
         return;
 
     GPUParticle thisParticle = particles[id];
@@ -202,6 +205,7 @@ void HandInput(uint id : SV_DispatchThreadID) {
     if (leftHandMode == 1) {
         thisParticle.force -= (leftHandDelta * 5.0) / pow(leftHandDist, 2.0); // * thisParticle.density?
     } else if (leftHandMode >= 2 && leftHandMode <= 6 && leftHandDist < leftHandStrength * 0.35f) {
+    /*
         if (leftHandMode == 2) {
             thisParticle.type = 0;
         } else if (leftHandMode == 3) {
@@ -209,6 +213,7 @@ void HandInput(uint id : SV_DispatchThreadID) {
         } else if (leftHandMode == 4) {
             thisParticle.type = 2;
         }
+        */
     }
     
     float3 rightHandDelta = thisParticle.position - rightHandPosition;
@@ -216,6 +221,7 @@ void HandInput(uint id : SV_DispatchThreadID) {
     if (rightHandMode == 1) {
         thisParticle.force -= (rightHandDelta * 5.0) / pow(rightHandDist, 2.0); // * thisParticle.density?
     } else if (rightHandMode >= 2 && rightHandMode <= 6 && rightHandDist < rightHandStrength * 0.35f) {
+    /*
         if (rightHandMode == 2) {
             thisParticle.type = 0;
         } else if (rightHandMode == 3) {
@@ -223,6 +229,7 @@ void HandInput(uint id : SV_DispatchThreadID) {
         } else if (rightHandMode == 4) {
             thisParticle.type = 2;
         }
+        */
     }
     
     particles[id] = thisParticle;
@@ -230,13 +237,13 @@ void HandInput(uint id : SV_DispatchThreadID) {
 
 [numthreads(128,1,1)]
 void PickNewParticles(uint id : SV_DispatchThreadID) {
-    if (id > particleCount)
+    if (id >= particleCount)
         return;
         
     GPUParticle thisParticle = particles[id];
     
     if (thisParticle.type == 1 || thisParticle.type == 5) {
-        thisParticle.remainingLifetime -= timeStep;
+        thisParticle.remainingLifetime -= timeStep / 2.0;
     } else if (thisParticle.type == 2) {
         thisParticle.remainingLifetime -= timeStep / 7.5;
         if (thisParticle.remainingLifetime > 3.0) {
@@ -254,14 +261,14 @@ void PickNewParticles(uint id : SV_DispatchThreadID) {
     //    thisParticle.remainingLifetime -= timeStep / 30.0;
     //}
 
-    if (particles[id].remainingLifetime > 0.0) {
+    if (thisParticle.remainingLifetime > 0.0) {
         nextParticles.Append(thisParticle);
     }
 }
 
 [numthreads(128,1,1)]
 void CopyAppendToRW(uint id : SV_DispatchThreadID) {
-    if (id > particleCount)
+    if (id >= particleCount)
         return;
         
     GPUParticle thisParticle = lastParticles[id];

@@ -264,6 +264,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
         particleSimShader.SetBuffer(copyIndex, "particles", particleBufferA);
         particleSimShader.SetBuffer(copyIndex, "lastParticles", particleAppendBuffer);
+        particleSimShader.SetInt("particleCount", (int)particleCount);
         
         particleSimShader.Dispatch(copyIndex,            Mathf.CeilToInt(particleCount / 128f), 1, 1);
     }
