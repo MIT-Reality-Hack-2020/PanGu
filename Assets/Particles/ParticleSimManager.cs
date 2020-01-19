@@ -19,14 +19,14 @@ public class ParticleSimManager : MonoBehaviour {
     public float boundaryDistance = 1f;
     //public float cellSize = 0.05f;
 
-    public float particleMass;
-    public float wallDamping;
-    public float particleStiffness;
-    public float particleRestingDensity;
-    public float particleViscosity;
-    [Range(0f, 0.5f)] public float smoothingLength;
-    public float timeStep;
-    public float3 gravity;
+    public float  particleMass;
+    public float  wallDamping;
+    public float  particleStiffness;
+    public float  particleRestingDensity;
+    public float  particleViscosity;
+    [Range(0f, 0.5f)] public float  smoothingLength;
+    public float  timeStep;
+    public float4 gravity;
 
     private ComputeBuffer drawArgs;
     private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
@@ -57,7 +57,6 @@ public class ParticleSimManager : MonoBehaviour {
     //private NativeList<Particle>  woodList;
     //private NativeList<Particle>  fireList;
     private NativeList<Particle> particleList;
-    private NativeList<Particle> nextParticleList;
     //private NativeList<Matrix4x4> matricesList;
     private NativeMultiHashMap<int, int> particleSpatialHashMap;
 
@@ -87,7 +86,6 @@ public class ParticleSimManager : MonoBehaviour {
         args[3] = particleMesh.GetBaseVertex(0);
 
         particleList = new NativeList<Particle>(Allocator.Persistent);
-        nextParticleList = new NativeList<Particle>(Allocator.Persistent);
         
         InitializeParticles();
     }
@@ -109,7 +107,6 @@ public class ParticleSimManager : MonoBehaviour {
             initialParticles[i].pressure = 1f;
             //Debug.Log($"{initialParticles[i].position} {initialParticles[i].velocity}");
             particleList.Add(initialParticles[i]);
-            nextParticleList.Add(initialParticles[i]);
         }
         
         //particleList.add
@@ -128,7 +125,7 @@ public class ParticleSimManager : MonoBehaviour {
         
         public void Execute(int i) {
             //var parallelHashMap = particleSpatialHashMap.AsParallelWriter();
-            int hash = (int)math.hash(new int3(math.floor((particles[i].position/* - boundsSize*/) / cellSize)));
+            int hash = (int)math.hash(new int3(math.floor((particles[i].position - boundsSize) / cellSize)));
             particleSpatialHashMapWriter.Add(hash, i);
         }
     }
@@ -138,73 +135,31 @@ public class ParticleSimManager : MonoBehaviour {
         [ReadOnly] public float deltaTime;
         [ReadOnly] public float cellSize;
         [ReadOnly] public float boundsSize;
-        [ReadOnly] public float interactionLength;
-        
-        [ReadOnly] public float  particleMass;
-        [ReadOnly] public float  wallDamping;
-        [ReadOnly] public float  particleStiffness;
-        [ReadOnly] public float  particleRestingDensity;
-        [ReadOnly] public float  particleViscosity;
-        [ReadOnly] public float  smoothingLength;
-        [ReadOnly] public float3 gravity;
         
         [ReadOnly] public NativeMultiHashMap<int, int> particleSpatialHashMap;
-        [ReadOnly] public NativeArray<Particle> particles;
-        public NativeArray<Particle> nextParticles;
+        public NativeArray<Particle> particles;
         
         public void Execute(int i) {
-            Particle thisParticle = particles[i];
-            int3 thisBucket = new int3(math.floor((particles[i].position/* - boundsSize*/) / cellSize));
-
-            float densitySum = 1f;
-            float3  pressureForce = float3.zero;
-            float3 viscosityForce = float3.zero;
-
+            int3 thisBucket = new int3(math.floor((particles[i].position - boundsSize) / cellSize));
+            
             // check all buckets adjacent to this one
+            /*
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++) {
                         int hash = (int)math.hash(thisBucket + new int3(x,y,z));
                         if (particleSpatialHashMap.ContainsKey(hash)) {
-                            var enumerator = particleSpatialHashMap.GetValuesForKey(hash);
-                            do {
-                                Particle otherParticle = particles[enumerator.Current];
-                                float3 delta = thisParticle.position - otherParticle.position;
-                                float distance = math.length(delta);
-                                if (distance < smoothingLength) {
-                                    densitySum += particleMass * 315.0f *
-                                                  math.pow(smoothingLength * smoothingLength - distance * distance, 3.0f) /
-                                                  (64.0f * math.PI * math.pow(smoothingLength, 9.0f));
-                                    
-                                    if (enumerator.Current != i) {
-                                        pressureForce -= particleMass * (thisParticle.pressure + otherParticle.pressure) / (2.0f * otherParticle.density) *
-                                                         -45.0f / (math.PI * math.pow(smoothingLength, 6.0f)) * math.pow(smoothingLength - distance, 2.0f) * math.normalize(delta);
-                
-                                        viscosityForce += particleMass * (otherParticle.velocity - thisParticle.velocity) * otherParticle.density *
-                                                          45.0f / (math.PI * math.pow(smoothingLength, 6.0f)) * (smoothingLength - distance);
-                                    }
-                                }
-                            } while(enumerator.MoveNext());
+                            foreach (int otherParticleIndex in particleSpatialHashMap.GetValuesForKey(hash)) {
+                                //Particle otherParticle = particles[otherParticleIndex];
+                            }
                         }
                     }
                 }
             }
-            
-            thisParticle.density = densitySum;
-            thisParticle.pressure = math.max(particleStiffness * (densitySum - particleRestingDensity), 0.0f);
-            
-            viscosityForce *= particleViscosity;
-            if (math.length(viscosityForce) > 50.0f)
-                viscosityForce = math.normalize(viscosityForce) * 50.0f;
-        
-            if (thisParticle.type == 1)
-                gravity = -gravity;
-        
-            float3 externalForce = gravity * thisParticle.density;
-    
-            thisParticle.force = pressureForce + viscosityForce + externalForce;
+            */
             
             // update this particle
+            Particle thisParticle = particles[i];
             float3 acceleration = thisParticle.force / thisParticle.density;
             float3 velocity = thisParticle.velocity + deltaTime * acceleration;// + timeStep * gravity;
     
@@ -215,15 +170,15 @@ public class ParticleSimManager : MonoBehaviour {
             //velocity *= 0.985;
 
             // TODO: apply sphere constraint
-            if (math.length(position) > boundsSize) {
-                position = math.normalize(position) * boundsSize;
+            if (math.length(position) > 1.0f) {
+                position = math.normalize(position) * 1.0f;
                 //velocity -= normalize(position) * particleRadius;
                 velocity *= -0.3f;
             }
     
             thisParticle.velocity = velocity;
             thisParticle.position = position;
-            nextParticles[i] = thisParticle;
+            particles[i] = thisParticle;
         }
     }
 
@@ -239,12 +194,8 @@ public class ParticleSimManager : MonoBehaviour {
         }
     }
     */
-
+    
     private void Update() {
-        var temp = particleList;
-        particleList = nextParticleList;
-        nextParticleList = temp;
-        
         //int cellCount = Mathf.CeilToInt((boundaryDistance * 2f) / smoothingLength);
         particleSpatialHashMap = new NativeMultiHashMap<int, int>(particleList.Length, Allocator.TempJob);
         //matricesList = new NativeList<Matrix4x4>(Allocator.TempJob);
@@ -262,16 +213,7 @@ public class ParticleSimManager : MonoBehaviour {
         updateParticlesJob.boundsSize = boundaryDistance;
         updateParticlesJob.cellSize = smoothingLength;
         updateParticlesJob.particles = particleList;
-        updateParticlesJob.nextParticles = nextParticleList;
         updateParticlesJob.deltaTime = 1f / 72f;
-
-        updateParticlesJob.particleMass = particleMass;
-        updateParticlesJob.wallDamping = wallDamping;
-        updateParticlesJob.particleStiffness = particleStiffness;
-        updateParticlesJob.particleRestingDensity = particleRestingDensity;
-        updateParticlesJob.particleViscosity = particleViscosity;
-        updateParticlesJob.smoothingLength = smoothingLength;
-        updateParticlesJob.gravity = gravity;
 
         updateParticlesHandle = updateParticlesJob.Schedule(particleList.Length, 16, updateSpatialHashMapHandle);
 
@@ -310,7 +252,6 @@ public class ParticleSimManager : MonoBehaviour {
 
     private void OnDestroy() {
         particleList.Dispose();
-        nextParticleList.Dispose();
         //particleBufferA.Release();
         //particleBufferB.Release();
     }
@@ -331,7 +272,7 @@ public class ParticleSimManager : MonoBehaviour {
         Graphics.DrawMeshInstancedIndirect(particleMesh, 0, particleDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), drawArgs);
     }
 
-    public void SpawnParticle(float3 position, float3 velocity, HandController.Element element) {
+    public void SpawnParticle(float3 position, float3 velocity) {
         Particle newParticle = new Particle {position = position, velocity = velocity};
         particleList.Add(newParticle);
         //particleBufferA.SetData(new[] { newParticle }, 0, (int)particleCount, 1);

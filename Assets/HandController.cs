@@ -10,43 +10,30 @@ public class HandController : MonoBehaviour
     }
 
     public enum Element {
-        Water, Fire, Wood, Earth, Metal
-    }
-
-    public enum Gesture {
-        None, Fist, Handgun, Pinch, Point
+        Water, Fire, Wood
     }
 
     public Hand hand;
 
     public Transform spawnPoint;
 
-    private ParticleSimManagerGPU particleSimManagerGPU;
-    private ParticleSimManager    particleSimManager;
+    private ParticleSimManagerGPU particleSimManager;
 
     public Element currentElement;
     
     private void Start() {
-        particleSimManagerGPU = ParticleSimManagerGPU.instance;
-        particleSimManager    = ParticleSimManager   .instance;
+        particleSimManager = ParticleSimManagerGPU.instance;
     }
 
     private void CycleElement() {
         switch (currentElement) {
             case Element.Water:
-                currentElement = Element.Earth;
-                break;
-            case Element.Earth:
-                currentElement = Element.Wood;
-                break;
-            case Element.Wood:
-                //currentElement = Element.Metal;
                 currentElement = Element.Fire;
                 break;
             case Element.Fire:
-                currentElement = Element.Water;
+                currentElement = Element.Wood;
                 break;
-            case Element.Metal:
+            case Element.Wood:
                 currentElement = Element.Water;
                 break;
         }
@@ -60,25 +47,25 @@ public class HandController : MonoBehaviour
 
         if (hand == Hand.Left) {
             fist    =  OVRInput.Get(OVRInput.RawButton.LIndexTrigger) &&
-                       OVRInput.Get(OVRInput.RawButton.LHandTrigger)  &&  OVRInput.Get(OVRInput.RawTouch.Y);
+                       OVRInput.Get(OVRInput.RawButton.LHandTrigger)  &&  OVRInput.Get(OVRInput.RawButton.Y);
             handgun = !OVRInput.Get(OVRInput.RawButton.LIndexTrigger) &&
-                       OVRInput.Get(OVRInput.RawButton.LHandTrigger)  && !OVRInput.Get(OVRInput.RawTouch.Y);
+                       OVRInput.Get(OVRInput.RawButton.LHandTrigger)  && !OVRInput.Get(OVRInput.RawButton.Y);
             pinch   =  OVRInput.Get(OVRInput.RawButton.LIndexTrigger) &&
-                      !OVRInput.Get(OVRInput.RawButton.LHandTrigger)  &&  OVRInput.Get(OVRInput.RawTouch.Y);
+                      !OVRInput.Get(OVRInput.RawButton.LHandTrigger)  &&  OVRInput.Get(OVRInput.RawButton.Y);
             point   = !OVRInput.Get(OVRInput.RawButton.LIndexTrigger) &&
-                       OVRInput.Get(OVRInput.RawButton.LHandTrigger)  &&  OVRInput.Get(OVRInput.RawTouch.Y);
+                       OVRInput.Get(OVRInput.RawButton.LHandTrigger)  &&  OVRInput.Get(OVRInput.RawButton.Y);
             
             if (OVRInput.GetDown(OVRInput.RawButton.X))
                 CycleElement();
         } else {
             fist     = OVRInput.Get(OVRInput.RawButton.RIndexTrigger) &&
-                       OVRInput.Get(OVRInput.RawButton.RHandTrigger)  &&  OVRInput.Get(OVRInput.RawTouch.B);
+                       OVRInput.Get(OVRInput.RawButton.RHandTrigger)  &&  OVRInput.Get(OVRInput.RawButton.B);
             handgun = !OVRInput.Get(OVRInput.RawButton.RIndexTrigger) &&
-                       OVRInput.Get(OVRInput.RawButton.RHandTrigger)  && !OVRInput.Get(OVRInput.RawTouch.B);
+                       OVRInput.Get(OVRInput.RawButton.RHandTrigger)  && !OVRInput.Get(OVRInput.RawButton.B);
             pinch   =  OVRInput.Get(OVRInput.RawButton.RIndexTrigger) &&
-                      !OVRInput.Get(OVRInput.RawButton.RHandTrigger)  &&  OVRInput.Get(OVRInput.RawTouch.B);
+                      !OVRInput.Get(OVRInput.RawButton.RHandTrigger)  &&  OVRInput.Get(OVRInput.RawButton.B);
             point   = !OVRInput.Get(OVRInput.RawButton.RIndexTrigger) &&
-                       OVRInput.Get(OVRInput.RawButton.RHandTrigger)  &&  OVRInput.Get(OVRInput.RawTouch.B);
+                       OVRInput.Get(OVRInput.RawButton.RHandTrigger)  &&  OVRInput.Get(OVRInput.RawButton.B);
             
             if (OVRInput.GetDown(OVRInput.RawButton.A))
                 CycleElement();
@@ -86,21 +73,8 @@ public class HandController : MonoBehaviour
 
         float handTrigger = (hand == Hand.Left) ? OVRInput.Get(OVRInput.RawAxis1D.LHandTrigger) : OVRInput.Get(OVRInput.RawAxis1D.RHandTrigger);
 
-        //if (handgun) {
-        //    particleSimManagerGPU?.SpawnParticle(spawnPoint.position, transform.forward, (handTrigger - 0.25f) * 10f, currentElement);
-        //}
-
-        Gesture gesture = Gesture.None;
-        if (fist) {
-            gesture = Gesture.Fist;
-        } else if (handgun) {
-            gesture = Gesture.Handgun;
-        } else if (pinch) {
-            gesture = Gesture.Pinch;
-        } else if (point) {
-            gesture = Gesture.Point;
+        if (handgun) {
+            particleSimManager.SpawnParticle(spawnPoint.position, 10f * (handTrigger - 0.35f) * transform.forward, currentElement);
         }
-
-        particleSimManagerGPU.SetHandState(hand, gesture, spawnPoint.position, transform.forward, handTrigger, currentElement);
     }
 }
