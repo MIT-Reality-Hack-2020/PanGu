@@ -165,15 +165,16 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
     uint binIndex = EncodeMorton3(binCoords.x, binCoords.y, binCoords.z);
 
     GPUParticle thisParticle = particles[id];
-    float densitySum = 0.000001;
-    //float densitySum = 0.0;
+    //float densitySum = 0.000001;
+    float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
     //for (uint j = 0; j < neighborInfo[id].count; j++) {
     //    uint i = neighborLists[neighborInfo[id].startIndex + j];
     
-    //for (uint i = 0; i < particleCount; i++) {
+    for (uint i = 0; i < particleCount; i++) {
     
+    /*
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             for (int z = -1; z <= 1; z++) {
@@ -187,6 +188,8 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                 uint particlesInCurrentBin = binCounts[currentBinIndex];
                 for (uint i = 0; i < particlesInCurrentBin; i++) {
                     uint otherParticleIndex = binParticleIndices[currentBinIndex * 1024 + i];
+                    */
+                    uint otherParticleIndex = i;
                     GPUParticle otherParticle = particles[otherParticleIndex];
                     
                     float3 delta = thisParticle.position - otherParticle.position;
@@ -233,9 +236,9 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                         }
                     }
                 }
-            }
-        }
-    }
+            //}
+        //}
+    //}
     
     thisParticle.density = densitySum;
     thisParticle.pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
@@ -264,7 +267,8 @@ void Force(uint id : SV_DispatchThreadID) {
 
     //for (uint j = 0; j < neighborInfo[id].count; j++) {
     //    uint i = neighborLists[neighborInfo[id].startIndex + j];
-    //for (uint i = 0; i < particleCount; i++) {
+    for (uint i = 0; i < particleCount; i++) {
+    /*
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             for (int z = -1; z <= 1; z++) {
@@ -278,6 +282,8 @@ void Force(uint id : SV_DispatchThreadID) {
                 uint particlesInCurrentBin = binCounts[currentBinIndex];
                 for (uint i = 0; i < particlesInCurrentBin; i++) {
                     uint otherParticleIndex = binParticleIndices[currentBinIndex * 1024 + i];
+                    */
+                    uint otherParticleIndex = i;
                     GPUParticle otherParticle = particles[otherParticleIndex];
                     if (id == otherParticleIndex) continue;
                     float3 delta = thisParticle.position - otherParticle.position;
@@ -290,9 +296,9 @@ void Force(uint id : SV_DispatchThreadID) {
                              45.0 / (pi * pow(smoothingLength, 6.0)) * (smoothingLength - distance);
                     }
                 }
-            }
-        }
-    }
+            //}
+        //}
+    //}
     
     viscosityForce *= particleViscosity;
     if (length(viscosityForce) > 50.0)

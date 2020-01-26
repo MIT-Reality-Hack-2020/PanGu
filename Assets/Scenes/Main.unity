@@ -330,7 +330,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &41018520
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,10 +1495,10 @@ MonoBehaviour:
   particleMesh: {fileID: 289301614986012343, guid: 7b7a32cabaddc2b449091bb05a40496f,
     type: 3}
   binMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  particleCount: 5000
+  particleCount: 15000
   boundsSize: 2
   particleMass: 0.025
-  wallDamping: 0.75
+  wallDamping: -0.3
   particleStiffness: 15
   particleRestingDensity: 50
   particleViscosity: 0.001
@@ -1507,7 +1507,7 @@ MonoBehaviour:
   timeStep: 0.01666667
   gravity:
     x: 0
-    y: -1
+    y: 0
     z: 0
     w: 0
 --- !u!1 &649383869 stripped
@@ -1567,7 +1567,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: 3
     m_CustomResolution: -1
     m_Strength: 1
