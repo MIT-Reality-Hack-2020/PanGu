@@ -145,6 +145,7 @@
             GPUParticle data = _ParticleBuffer[unity_InstanceID];
             if (data.type == 0) {
                 o.Albedo = _WaterColor;
+                o.Emission = lerp(float3(0,0,0), float3(1,1,1), saturate(data.density / 100.0));
                 o.Smoothness = 0.75;
             } else if (data.type == 1) { 
                 o.Albedo = _FireColor;

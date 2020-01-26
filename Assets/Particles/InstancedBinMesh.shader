@@ -16,7 +16,7 @@
         Tags { "RenderType"="Transparent" }
         LOD 200
         CGPROGRAM
-        #pragma surface surf Unlit addshadow fullforwardshadows alpha:fade 
+        #pragma surface surf Unlit alpha:fade 
         #pragma multi_compile_instancing
         #pragma instancing_options procedural:setup
         

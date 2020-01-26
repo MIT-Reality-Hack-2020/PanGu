@@ -84,7 +84,9 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
     private void Awake() {
         instance = this;
-        
+
+        Application.targetFrameRate = 90;
+
         particleBufferA = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16);
         particleAppendBuffer = new ComputeBuffer(64 * 64 * 64, sizeof(float) * 16, ComputeBufferType.Append);
         particleAppendBuffer.SetCounterValue(0);
@@ -264,7 +266,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetFloat("particleViscosity", particleViscosity);
         particleSimShader.SetFloat("smoothingLength", smoothingLength);
         particleSimShader.SetFloat("interactionLength", interactionLength);
-        particleSimShader.SetFloat("timeStep", timeStep);
+        particleSimShader.SetFloat("timeStep", 1f / 90f);
         particleSimShader.SetFloat("boundsSize", boundsSize);
         particleSimShader.SetVector("gravity", gravity);
 
@@ -348,7 +350,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         binDebugMaterial.SetFloat("_BinSize", smoothingLength);
         binDebugMaterial.SetFloat("_BoundsSize", boundsSize);
         
-        Graphics.DrawMeshInstancedIndirect(binMesh, 0, binDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), binDrawArgs);
+        //Graphics.DrawMeshInstancedIndirect(binMesh, 0, binDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), binDrawArgs);
         
         //var particlesManaged = new GPUParticle[particleCount];
         //particleBufferA.GetData(particlesManaged);
