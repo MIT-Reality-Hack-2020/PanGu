@@ -38,6 +38,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
     //private ComputeBuffer neighborInfoBuffer;
     //private ComputeBuffer neighborListBuffer;
+    private ComputeBuffer binCountsBuffer;
+    private ComputeBuffer binParticleIndicesBuffer;
     
     private int          verletIndex;
     private int densityPressureIndex;
@@ -45,6 +47,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private int       handInputIndex;
     private int        pickNextIndex;
     private int            copyIndex;
+    private int         sumBinsIndex;
     
     struct GPUParticle {
         public float3 position;
@@ -67,6 +70,12 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
     public static ParticleSimManagerGPU instance;
 
+    private int binsPerAxis {
+        get {
+            return Mathf.CeilToInt((boundsSize * 2f) / smoothingLength);
+        }
+    }
+
     private void Awake() {
         instance = this;
         
@@ -75,6 +84,8 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleAppendBuffer.SetCounterValue(0);
         //neighborInfoBuffer = new ComputeBuffer(64 * 64* 64, sizeof(int) * 2);
         //neighborListBuffer = new ComputeBuffer(64 * 64 * 64 * 32, sizeof(int));
+        binCountsBuffer = new ComputeBuffer(binsPerAxis * binsPerAxis * binsPerAxis, sizeof(int));
+        binParticleIndicesBuffer = new ComputeBuffer(binsPerAxis * binsPerAxis * binsPerAxis * 256, sizeof(int));
         
                  verletIndex = particleSimShader.FindKernel("Verlet");
         densityPressureIndex = particleSimShader.FindKernel("DensityPressure");
@@ -82,6 +93,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
               handInputIndex = particleSimShader.FindKernel("HandInput");
                pickNextIndex = particleSimShader.FindKernel("PickNewParticles");
                    copyIndex = particleSimShader.FindKernel("CopyAppendToRW");
+                sumBinsIndex = particleSimShader.FindKernel("SumBins");
               
         drawArgs = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
         args[0] = particleMesh.GetIndexCount(0);
@@ -246,6 +258,11 @@ public class ParticleSimManagerGPU : MonoBehaviour {
 
         float groupSizeX = 64f;
         
+        particleSimShader.SetBuffer(densityPressureIndex, "binCounts", binCountsBuffer);
+        particleSimShader.SetBuffer(densityPressureIndex, "binParticleIndices", binParticleIndicesBuffer);
+        particleSimShader.SetBuffer(forceIndex, "binCounts", binCountsBuffer);
+        particleSimShader.SetBuffer(forceIndex, "binParticleIndices", binParticleIndicesBuffer);
+        
         particleSimShader.Dispatch(densityPressureIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
         particleSimShader.Dispatch(forceIndex,           Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
         particleSimShader.Dispatch(handInputIndex,       Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
@@ -268,13 +285,21 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetBuffer(copyIndex, "lastParticles", particleAppendBuffer);
         particleSimShader.SetInt("particleCount", (int)particleCount);
         
-        particleSimShader.Dispatch(copyIndex,            Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
+        particleSimShader.Dispatch(copyIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
+        
+        particleSimShader.SetBuffer(sumBinsIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(sumBinsIndex, "binCounts", binCountsBuffer);
+        particleSimShader.SetBuffer(sumBinsIndex, "binParticleIndices", binParticleIndicesBuffer);
+        
+        particleSimShader.Dispatch(sumBinsIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
     }
 
     private void OnDestroy() {
         particleBufferA.Release();
         particleAppendBuffer.Release();
         drawArgs.Release();
+        binCountsBuffer.Release();
+        binParticleIndicesBuffer.Release();
     }
 
     private void LateUpdate() {
