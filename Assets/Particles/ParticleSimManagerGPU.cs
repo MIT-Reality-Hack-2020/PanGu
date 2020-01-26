@@ -12,7 +12,9 @@ using Random = Unity.Mathematics.Random;
 public class ParticleSimManagerGPU : MonoBehaviour {
     public ComputeShader particleSimShader;
     public Material particleDebugMaterial;
+    public Material binDebugMaterial;
     public Mesh particleMesh;
+    public Mesh binMesh;
 
     public uint particleCount = 1000;
 
@@ -27,8 +29,11 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     public float  timeStep;
     public float4 gravity;
 
-    private ComputeBuffer drawArgs;
-    private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
+    private ComputeBuffer particleDrawArgs;
+    private uint[] args0 = new uint[5] { 0, 0, 0, 0, 0 };
+    
+    private ComputeBuffer binDrawArgs;
+    private uint[] args1 = new uint[5] { 0, 0, 0, 0, 0 };
     
     //private NativeList<GPUParticle> particleList;
 
@@ -48,6 +53,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private int        pickNextIndex;
     private int            copyIndex;
     private int         sumBinsIndex;
+    private int  clearBinCountsIndex;
     
     struct GPUParticle {
         public float3 position;
@@ -85,7 +91,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         //neighborInfoBuffer = new ComputeBuffer(64 * 64* 64, sizeof(int) * 2);
         //neighborListBuffer = new ComputeBuffer(64 * 64 * 64 * 32, sizeof(int));
         binCountsBuffer = new ComputeBuffer(binsPerAxis * binsPerAxis * binsPerAxis, sizeof(int));
-        binParticleIndicesBuffer = new ComputeBuffer(binsPerAxis * binsPerAxis * binsPerAxis * 256, sizeof(int));
+        binParticleIndicesBuffer = new ComputeBuffer(binsPerAxis * binsPerAxis * binsPerAxis * 1024, sizeof(int));
         
                  verletIndex = particleSimShader.FindKernel("Verlet");
         densityPressureIndex = particleSimShader.FindKernel("DensityPressure");
@@ -94,11 +100,17 @@ public class ParticleSimManagerGPU : MonoBehaviour {
                pickNextIndex = particleSimShader.FindKernel("PickNewParticles");
                    copyIndex = particleSimShader.FindKernel("CopyAppendToRW");
                 sumBinsIndex = particleSimShader.FindKernel("SumBins");
+         clearBinCountsIndex = particleSimShader.FindKernel("ClearBinCounts");
               
-        drawArgs = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
-        args[0] = particleMesh.GetIndexCount(0);
-        args[2] = particleMesh.GetIndexStart(0);
-        args[3] = particleMesh.GetBaseVertex(0);
+        particleDrawArgs = new ComputeBuffer(1, args0.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+        args0[0] = particleMesh.GetIndexCount(0);
+        args0[2] = particleMesh.GetIndexStart(0);
+        args0[3] = particleMesh.GetBaseVertex(0);
+        
+        binDrawArgs = new ComputeBuffer(1, args1.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+        args1[0] = binMesh.GetIndexCount(0);
+        args1[2] = binMesh.GetIndexStart(0);
+        args1[3] = binMesh.GetBaseVertex(0);
         
         InitializeParticles();
     }
@@ -287,17 +299,30 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         
         particleSimShader.Dispatch(copyIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
         
+        particleSimShader.SetBuffer(clearBinCountsIndex, "binCounts", binCountsBuffer);
+
+        particleSimShader.Dispatch(clearBinCountsIndex, Mathf.CeilToInt((binsPerAxis * binsPerAxis * binsPerAxis) / groupSizeX), 1, 1);
+
         particleSimShader.SetBuffer(sumBinsIndex, "particles", particleBufferA);
         particleSimShader.SetBuffer(sumBinsIndex, "binCounts", binCountsBuffer);
         particleSimShader.SetBuffer(sumBinsIndex, "binParticleIndices", binParticleIndicesBuffer);
         
         particleSimShader.Dispatch(sumBinsIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
+        
+        //GPUParticle[] particles = new GPUParticle[particleCount];
+        //particleBufferA.GetData(particles);
+        //Debug.Log($"{particles[0].position} {particles[0].velocity}");
+
+        //int[] binCounts = new int[binsPerAxis * binsPerAxis * binsPerAxis];
+        //binCountsBuffer.GetData(binCounts);
+        
     }
 
     private void OnDestroy() {
+        particleDrawArgs.Release();
         particleBufferA.Release();
         particleAppendBuffer.Release();
-        drawArgs.Release();
+        binDrawArgs.Release();
         binCountsBuffer.Release();
         binParticleIndicesBuffer.Release();
     }
@@ -305,15 +330,26 @@ public class ParticleSimManagerGPU : MonoBehaviour {
     private void LateUpdate() {
         particleAppendBuffer.SetCounterValue(0);
         
-        args[1] = particleCount;
-        drawArgs.SetData(args);
+        args0[1] = particleCount;
+        particleDrawArgs.SetData(args0);
+        args1[1] = (uint)(binsPerAxis * binsPerAxis * binsPerAxis);
+        binDrawArgs.SetData(args1);
+        //Debug.Log((uint)(binsPerAxis * binsPerAxis * binsPerAxis));
         
         particleDebugMaterial.SetPass(0);
         //particleDebugMaterial.SetBuffer("_ParticleBuffer", pingPong ? particleBufferA : particleBufferB);
         particleDebugMaterial.SetBuffer("_ParticleBuffer", particleBufferA);
         
-        Graphics.DrawMeshInstancedIndirect(particleMesh, 0, particleDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), drawArgs);
+        Graphics.DrawMeshInstancedIndirect(particleMesh, 0, particleDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), particleDrawArgs);
 
+        binDebugMaterial.SetPass(0);
+        binDebugMaterial.SetBuffer("_BinCountBuffer", binCountsBuffer);
+        
+        binDebugMaterial.SetFloat("_BinSize", smoothingLength);
+        binDebugMaterial.SetFloat("_BoundsSize", boundsSize);
+        
+        Graphics.DrawMeshInstancedIndirect(binMesh, 0, binDebugMaterial, new Bounds(Vector3.zero, Vector3.one * 1000f), binDrawArgs);
+        
         //var particlesManaged = new GPUParticle[particleCount];
         //particleBufferA.GetData(particlesManaged);
         //particleList = ;

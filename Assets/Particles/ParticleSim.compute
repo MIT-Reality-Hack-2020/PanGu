@@ -5,6 +5,7 @@
 #pragma kernel PickNewParticles
 #pragma kernel CopyAppendToRW
 #pragma kernel SumBins
+#pragma kernel ClearBinCounts
 
 struct GPUParticle {
      float3 position;
@@ -87,10 +88,22 @@ uint Compact1By2(uint x)
   return x;
 }
 
+
 uint EncodeMorton3(uint x, uint y, uint z)
 {
   return (Part1By2(z) << 2) + (Part1By2(y) << 1) + Part1By2(x);
 }
+
+
+/*
+uint EncodeMorton3(uint x, uint y, uint z) {
+    float cellSize = smoothingLength;
+    float lengthPerAxis = boundsSize * 2.0;
+    uint binsPerAxis = ceil(lengthPerAxis / smoothingLength);
+    
+    return x * binsPerAxis * binsPerAxis + y * binsPerAxis + z;
+}
+*/
 
 uint DecodeMorton3X(uint code)
 {
@@ -145,22 +158,22 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
         
     float cellSize = smoothingLength;
     float lengthPerAxis = boundsSize * 2.0;
-    uint binsPerAxis = ceil(cellSize / smoothingLength);
+    uint binsPerAxis = ceil(lengthPerAxis / smoothingLength);
         
     float3 positiveShiftedPosition = particles[id].position + float3(boundsSize, boundsSize, boundsSize);
-    uint3 binCoords = uint3(floor(positiveShiftedPosition.x / cellSize), floor(positiveShiftedPosition.y / cellSize), floor(positiveShiftedPosition.z / cellSize));
+    int3 binCoords = int3(floor(positiveShiftedPosition.x / cellSize), floor(positiveShiftedPosition.y / cellSize), floor(positiveShiftedPosition.z / cellSize));
     uint binIndex = EncodeMorton3(binCoords.x, binCoords.y, binCoords.z);
 
     GPUParticle thisParticle = particles[id];
-    float densitySum = 0.0;
+    float densitySum = 0.001;
+    //float densitySum = 0.0;
     
     // TODO: optimize!!! needs spatial partitioning
     //for (uint j = 0; j < neighborInfo[id].count; j++) {
     //    uint i = neighborLists[neighborInfo[id].startIndex + j];
     
-    for (uint i = 0; i < particleCount; i++) {
+    //for (uint i = 0; i < particleCount; i++) {
     
-    /*
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             for (int z = -1; z <= 1; z++) {
@@ -173,10 +186,9 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                 uint currentBinIndex = EncodeMorton3(currentBinCoords.x, currentBinCoords.y, currentBinCoords.z);
                 uint particlesInCurrentBin = binCounts[currentBinIndex];
                 for (uint i = 0; i < particlesInCurrentBin; i++) {
-                    GPUParticle otherParticle = particles[binParticleIndices[currentBinIndex * 256 + i]];
-                    */
-                    GPUParticle otherParticle = particles[i];
-                     
+                    uint otherParticleIndex = binParticleIndices[currentBinIndex * 1024 + i];
+                    GPUParticle otherParticle = particles[otherParticleIndex];
+                    
                     float3 delta = thisParticle.position - otherParticle.position;
                     float distance = length(delta);
                     if (distance < smoothingLength) {
@@ -192,14 +204,14 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                                     otherParticle.type = 1;
                                     otherParticle.remainingLifetime = 1.0;
                                 //} 
-                                particles[i] = otherParticle;
+                                particles[otherParticleIndex] = otherParticle;
                             }
                             
                             if (otherParticle.type == 0) {
                                 //thisParticle.type = 0;
                                 thisParticle.remainingLifetime -= 0.5;
                                 otherParticle.velocity *= 1.5;
-                                particles[i] = otherParticle;
+                                particles[otherParticleIndex] = otherParticle;
                             } 
                         }
                         
@@ -209,7 +221,7 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                                 //otherParticle.remainingLifetime = -5.0;
                                 otherParticle.type = 2;
                                 thisParticle.remainingLifetime += 0.25;
-                                particles[i] = otherParticle;
+                                particles[otherParticleIndex] = otherParticle;
                             }
                         }
                         
@@ -221,9 +233,9 @@ void DensityPressure(uint id : SV_DispatchThreadID) {
                         }
                     }
                 }
-            //}
-        //}
-    //}
+            }
+        }
+    }
     
     thisParticle.density = densitySum;
     thisParticle.pressure = max(particleStiffness * (densitySum - particleRestingDensity), 0.0);
@@ -238,13 +250,13 @@ void Force(uint id : SV_DispatchThreadID) {
         
     float cellSize = smoothingLength;
     float lengthPerAxis = boundsSize * 2.0;
-    uint binsPerAxis = ceil(cellSize / smoothingLength);
+    uint binsPerAxis = ceil(lengthPerAxis / smoothingLength);
         
     float3 positiveShiftedPosition = particles[id].position + float3(boundsSize, boundsSize, boundsSize);
-    uint3 binCoords = uint3(floor(positiveShiftedPosition.x / cellSize), floor(positiveShiftedPosition.y / cellSize), floor(positiveShiftedPosition.z / cellSize));
+    int3 binCoords = int3(floor(positiveShiftedPosition.x / cellSize), floor(positiveShiftedPosition.y / cellSize), floor(positiveShiftedPosition.z / cellSize));
     uint binIndex = EncodeMorton3(binCoords.x, binCoords.y, binCoords.z);
     
-    binParticleIndices[binIndex * 256 + binCounts[binIndex]] = id;
+    //binParticleIndices[binIndex * 256 + binCounts[binIndex]] = id;
 
     GPUParticle thisParticle = particles[id];
     float3 pressureForce = float3(0,0,0);
@@ -252,8 +264,7 @@ void Force(uint id : SV_DispatchThreadID) {
 
     //for (uint j = 0; j < neighborInfo[id].count; j++) {
     //    uint i = neighborLists[neighborInfo[id].startIndex + j];
-    for (uint i = 0; i < particleCount; i++) {
-    /*
+    //for (uint i = 0; i < particleCount; i++) {
     for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             for (int z = -1; z <= 1; z++) {
@@ -266,11 +277,9 @@ void Force(uint id : SV_DispatchThreadID) {
                 uint currentBinIndex = EncodeMorton3(currentBinCoords.x, currentBinCoords.y, currentBinCoords.z);
                 uint particlesInCurrentBin = binCounts[currentBinIndex];
                 for (uint i = 0; i < particlesInCurrentBin; i++) {
-                    uint otherParticlesIndex = binParticleIndices[currentBinIndex * 256 + i];
-                    */
-                    uint otherParticlesIndex = i;
-                    GPUParticle otherParticle = particles[otherParticlesIndex];
-                    if (id == otherParticlesIndex) continue;
+                    uint otherParticleIndex = binParticleIndices[currentBinIndex * 1024 + i];
+                    GPUParticle otherParticle = particles[otherParticleIndex];
+                    if (id == otherParticleIndex) continue;
                     float3 delta = thisParticle.position - otherParticle.position;
                     float distance = length(delta);
                     if (distance < smoothingLength) {
@@ -281,9 +290,9 @@ void Force(uint id : SV_DispatchThreadID) {
                              45.0 / (pi * pow(smoothingLength, 6.0)) * (smoothingLength - distance);
                     }
                 }
-            //}
-        //}
-    //}
+            }
+        }
+    }
     
     viscosityForce *= particleViscosity;
     if (length(viscosityForce) > 50.0)
@@ -400,10 +409,22 @@ void SumBins(uint id : SV_DispatchThreadID) {
     float3 positiveShiftedPosition = particles[id].position + float3(boundsSize, boundsSize, boundsSize);
     uint3 binCoords = uint3(floor(positiveShiftedPosition.x / cellSize), floor(positiveShiftedPosition.y / cellSize), floor(positiveShiftedPosition.z / cellSize));
     uint binIndex = EncodeMorton3(binCoords.x, binCoords.y, binCoords.z);
+
+    binParticleIndices[binIndex * 1024 + binCounts[binIndex]] = id;
+    InterlockedAdd(binCounts[binIndex], 1);
+}
+
+[numthreads(64,1,1)]
+void ClearBinCounts(uint id : SV_DispatchThreadID) {
+    float cellSize = smoothingLength;
+    int binsPerAxis = ceil((boundsSize * 2.0) / cellSize);
+
+    if (id >= binsPerAxis * binsPerAxis * binsPerAxis)
+        return;
     
-    binParticleIndices[binIndex * 256 + binCounts[binIndex]] = id;
+    binCounts[id] = 0;
     
-    binCounts[binIndex]++;
+    //binCounts[binIndex]++;
 }
 
 [numthreads(4,4,4)]

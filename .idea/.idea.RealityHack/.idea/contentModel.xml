@@ -747,6 +747,7 @@
           </e>
         </e>
         <e p="Particles" t="Include">
+          <e p="InstancedBinMesh.shader" t="Include" />
           <e p="InstancedParticleMesh.shader" t="Include" />
           <e p="ParticleSim.compute" t="Include" />
           <e p="ParticleSimManager.cs" t="Include" />
