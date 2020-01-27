@@ -271,6 +271,16 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetVector("gravity", gravity);
 
         float groupSizeX = 64f;
+
+        particleSimShader.SetBuffer(clearBinCountsIndex, "binCounts", binCountsBuffer);
+
+        particleSimShader.Dispatch(clearBinCountsIndex, Mathf.CeilToInt((binsPerAxis * binsPerAxis * binsPerAxis) / groupSizeX), 1, 1);
+
+        particleSimShader.SetBuffer(sumBinsIndex, "particles", particleBufferA);
+        particleSimShader.SetBuffer(sumBinsIndex, "binCounts", binCountsBuffer);
+        particleSimShader.SetBuffer(sumBinsIndex, "binParticleIndices", binParticleIndicesBuffer);
+        
+        particleSimShader.Dispatch(sumBinsIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
         
         particleSimShader.SetBuffer(densityPressureIndex, "binCounts", binCountsBuffer);
         particleSimShader.SetBuffer(densityPressureIndex, "binParticleIndices", binParticleIndicesBuffer);
@@ -300,17 +310,7 @@ public class ParticleSimManagerGPU : MonoBehaviour {
         particleSimShader.SetInt("particleCount", (int)particleCount);
         
         particleSimShader.Dispatch(copyIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
-        
-        particleSimShader.SetBuffer(clearBinCountsIndex, "binCounts", binCountsBuffer);
 
-        particleSimShader.Dispatch(clearBinCountsIndex, Mathf.CeilToInt((binsPerAxis * binsPerAxis * binsPerAxis) / groupSizeX), 1, 1);
-
-        particleSimShader.SetBuffer(sumBinsIndex, "particles", particleBufferA);
-        particleSimShader.SetBuffer(sumBinsIndex, "binCounts", binCountsBuffer);
-        particleSimShader.SetBuffer(sumBinsIndex, "binParticleIndices", binParticleIndicesBuffer);
-        
-        particleSimShader.Dispatch(sumBinsIndex, Mathf.CeilToInt(particleCount / groupSizeX), 1, 1);
-        
         //GPUParticle[] particles = new GPUParticle[particleCount];
         //particleBufferA.GetData(particles);
         //Debug.Log($"{particles[0].position} {particles[0].velocity}");
